@@ -63,13 +63,17 @@
         <p>© 2026 PHFLIX Entertainment.</p>
     </footer>
 
-    <script>
+   <script>
         if (localStorage.getItem('phflix_autenticado') !== 'true') {
             window.location.href = '../login/index.html';
         }
 
         const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
         const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
+
+        // PEGANDO O SEU USUÁRIO DINAMICAMENTE PARA O CAMINHO ABSOLUTO
+        const NOME_USUARIO_GIT = window.location.hostname.split('.')[0];
+        const URL_CSV_CONTEUDOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/conteudos.csv`;
 
         document.addEventListener("DOMContentLoaded", () => {
             carregarBannerDestaque();
@@ -94,11 +98,12 @@
             }
         }
 
-        // Lê o arquivo conteudos.csv mapeando exatamente pelas colunas lidas de dentro dele
         function carregarGridDeFilmesESeries() {
-            Papa.parse("../dados/conteudos.csv", {
+            // Usando a URL absoluta para o GitHub Pages não se perder nas pastas
+            Papa.parse(URL_CSV_CONTEUDOS, {
                 download: true,
                 header: true,
+                skipEmptyLines: true, // Ignora linhas em branco do final do arquivo
                 complete: function(results) {
                     const lista = results.data;
                     const containerFilmes = document.getElementById("container-filmes");
@@ -112,7 +117,7 @@
                         
                         const card = `
                             <div class="group cursor-pointer relative" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.toLowerCase()}')">
-                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface-container mb-3 relative border border-zinc-800 shadow-md">
+                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#201f1f] mb-3 relative border border-zinc-800 shadow-md">
                                     <img src="${item.Capa}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${item.Nome}" loading="lazy">
                                     <div class="absolute top-2 right-2 bg-gradient-to-r from-red-700 to-red-600 text-[9px] font-extrabold px-2 py-0.5 rounded-sm uppercase tracking-wider text-white shadow-sm">${item.Idioma || 'DUB'}</div>
                                 </div>
