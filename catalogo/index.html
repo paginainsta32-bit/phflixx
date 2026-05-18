@@ -96,8 +96,9 @@
         const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
         const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
 
-        // CAMINHO CORRIGIDO: Puxando localmente da sua pasta de dados provada no print!
-        const URL_LOCAL_CONTEUDOS = "../dados/conteudos.csv";
+        // CAMINHO DEFINITIVO: URL Absoluta baseada na rota limpa da pasta dados que você provou!
+        const NOME_USUARIO_GIT = window.location.hostname.split('.')[0];
+        const URL_GLOBAL_CONTEUDOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/conteudos.csv`;
 
         document.addEventListener("DOMContentLoaded", () => {
             carregarBannerDestaque();
@@ -123,7 +124,7 @@
         }
 
         function carregarGridDeFilmesESeries() {
-            Papa.parse(URL_LOCAL_CONTEUDOS, {
+            Papa.parse(URL_GLOBAL_CONTEUDOS, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
