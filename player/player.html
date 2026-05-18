@@ -1,160 +1,194 @@
 <!DOCTYPE html>
-<html class="dark" lang="pt-BR">
+<html lang="pt-BR">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>PHFLIX - Player Cinematográfico</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-              "background": "#131313",
-              "surface-container-high": "#2a2a2a",
-              "surface-container": "#201f1f",
-              "primary-container": "#e50914",
-              "on-background": "#e5e2e1",
-              "secondary": "#c8c6c5",
-              "outline-variant": "#5e3f3b"
-            },
-            "spacing": {
-              "margin-desktop": "60px",
-              "gutter": "16px"
-            }
-          }
-        }
-      }
-    </script>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>PHFLIX PLAYER</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
 </head>
-<body class="bg-[#131313] text-[#e5e2e1] font-['Inter']">
 
-    <nav class="p-5 bg-black/50 backdrop-blur-md flex items-center justify-between border-b border-zinc-900 sticky top-0 z-50">
-        <a href="../catalogo/index.html" class="text-xs font-bold text-zinc-400 hover:text-white transition-all flex items-center gap-1">
-            <span class="material-symbols-outlined text-sm">arrow_back</span> Voltar ao Catálogo
-        </a>
-        <span class="text-2xl font-black text-[#e50914] tracking-tight">PHFLIX</span>
-    </nav>
+<body class="bg-[#131313] text-white">
 
-    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-4">
-            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
-                <iframe id="player-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-            </div>
-            <div class="p-6 bg-surface-container rounded-xl border border-zinc-900 space-y-3">
-                <div class="flex items-center gap-3">
-                    <h1 id="titulo-midia" class="text-2xl font-black text-white tracking-tight">Carregando Título...</h1>
-                    <span id="badge-tipo" class="text-[10px] bg-[#e50914] font-extrabold px-2 py-0.5 rounded text-white uppercase tracking-wider">---</span>
+<nav class="bg-black p-4 flex justify-between items-center">
+
+<a href="../catalogo/index.html"
+class="text-zinc-300 hover:text-white">
+← Voltar
+</a>
+
+<h1 class="text-2xl font-black text-red-600">
+PHFLIX
+</h1>
+
+</nav>
+
+<div class="max-w-7xl mx-auto p-6 grid lg:grid-cols-3 gap-8">
+
+<div class="lg:col-span-2">
+
+<div class="aspect-video bg-black rounded-xl overflow-hidden">
+
+<iframe id="player"
+class="w-full h-full"
+allowfullscreen
+frameborder="0"></iframe>
+
+</div>
+
+<div class="mt-5">
+
+<h1 id="titulo"
+class="text-4xl font-black mb-3">
+Carregando...
+</h1>
+
+<p id="sinopse"
+class="text-zinc-400">
+...
+</p>
+
+</div>
+
+</div>
+
+<div id="episodios-box"
+class="hidden">
+
+<h2 class="text-2xl font-black mb-4">
+Episódios
+</h2>
+
+<div id="episodios"
+class="space-y-3">
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const URL_CONTEUDOS =
+"https://paginainsta32-bit.github.io/phflixx/dados/conteudos.csv";
+
+const URL_EPISODIOS =
+"https://paginainsta32-bit.github.io/phflixx/dados/episodios.csv";
+
+const params =
+new URLSearchParams(window.location.search);
+
+const nome =
+decodeURIComponent(params.get("nome"));
+
+const tipo =
+params.get("tipo");
+
+if(tipo === "filme"){
+    carregarFilme();
+}else{
+    carregarSerie();
+}
+
+function carregarFilme(){
+
+    Papa.parse(URL_CONTEUDOS,{
+
+        download:true,
+        header:true,
+        delimiter:",",
+
+        complete:function(results){
+
+            const filme =
+            results.data.find(f=>f.Nome === nome);
+
+            if(!filme) return;
+
+            document.getElementById("titulo").innerText =
+            filme.Nome;
+
+            document.getElementById("sinopse").innerText =
+            filme.Sinopse || "";
+
+            document.getElementById("player").src =
+            filme.Link;
+
+        }
+
+    });
+
+}
+
+function carregarSerie(){
+
+    document.getElementById("episodios-box")
+    .classList.remove("hidden");
+
+    Papa.parse(URL_EPISODIOS,{
+
+        download:true,
+        header:true,
+        delimiter:",",
+
+        complete:function(results){
+
+            const lista =
+            results.data.filter(ep=>ep.Nome === nome);
+
+            const container =
+            document.getElementById("episodios");
+
+            container.innerHTML = "";
+
+            lista.forEach(ep=>{
+
+                const item = `
+                <div onclick="trocarPlayer('${ep.Link}')"
+                class="bg-zinc-900 hover:bg-zinc-800 p-4 rounded-xl cursor-pointer">
+
+                    <h3 class="font-bold">
+                    Temporada ${ep.Temporada}
+                    Episódio ${ep.Episódio}
+                    </h3>
+
                 </div>
-                <p id="sinopse-midia" class="text-secondary text-sm leading-relaxed">Buscando detalhes...</p>
-            </div>
-        </div>
+                `;
 
-        <div id="bloco-episodios" class="space-y-4 bg-surface-container/30 p-4 rounded-xl border border-zinc-900" style="display: none;">
-            <div class="flex items-center justify-between pb-3 border-b border-outline-variant">
-                <h2 class="text-base font-bold text-white flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">video_library</span> Episódios
-                </h2>
-                <span id="contador-ep" class="text-xs text-secondary font-bold">0 episódios</span>
-            </div>
-            <div id="grade-episodios" class="space-y-3 max-h-[480px] overflow-y-auto pr-2"></div>
-        </div>
-    </main>
+                container.innerHTML += item;
 
-    <script>
-        if (localStorage.getItem('phflix_autenticado') !== 'true') {
-            window.location.href = '../login/index.html';
-        }
+            });
 
-        // SOLUÇÃO DEFINITIVA: Puxando relativo local (independe de phflix ou phflixx!)
-        const URL_LOCAL_CONTEUDOS = "../dados/conteudos.csv";
-        const URL_LOCAL_EPISODIOS = "../dados/episodios.csv";
+            if(lista.length > 0){
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const URL_PARAMS = new URLSearchParams(window.location.search);
-            const NOME_MIDIA = decodeURIComponent(URL_PARAMS.get('nome'));
-            const TIPO_MIDIA = URL_PARAMS.get('tipo').trim().toLowerCase();
+                trocarPlayer(lista[0].Link);
 
-            if (TIPO_MIDIA === 'filme') {
-                carregarFilme(NOME_MIDIA);
-            } else {
-                carregarSerie(NOME_MIDIA);
+                document.getElementById("titulo").innerText =
+                nome;
+
             }
-        });
 
-        function carregarFilme(nome) {
-            Papa.parse(URL_LOCAL_CONTEUDOS, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    const filme = results.data.find(f => f.Nome === nome);
-                    if (filme) {
-                        document.getElementById("titulo-midia").innerText = filme.Nome;
-                        document.getElementById("sinopse-midia").innerText = filme.Sinopse && filme.Sinopse !== 'NaN' ? filme.Sinopse : "Sinopse disponível no reprodutor.";
-                        document.getElementById("badge-tipo").innerText = filme.Tipo;
-                        document.getElementById("player-iframe").src = filme.Link;
-                    }
-                }
-            });
         }
 
-        function carregarSerie(nome) {
-            document.getElementById("bloco-episodios").style.display = "block";
+    });
 
-            Papa.parse(URL_LOCAL_CONTEUDOS, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    const serie = results.data.find(s => s.Nome === nome);
-                    if (serie) {
-                        document.getElementById("titulo-midia").innerText = serie.Nome;
-                        document.getElementById("sinopse-midia").innerText = serie.Sinopse && serie.Sinopse !== 'NaN' ? serie.Sinopse : "Sinopse disponível no reprodutor.";
-                        document.getElementById("badge-tipo").innerText = serie.Tipo;
-                    }
-                }
-            });
+}
 
-            Papa.parse(URL_LOCAL_EPISODIOS, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    const listaFiltrada = results.data.filter(ep => ep.Nome === nome);
-                    const container = document.getElementById("grade-episodios");
-                    
-                    document.getElementById("contador-ep").innerText = `${listaFiltrada.length} Episódios`;
-                    container.innerHTML = "";
+function trocarPlayer(link){
 
-                    listaFiltrada.forEach(ep => {
-                        if(!ep.Episódio) return;
-                        const itemCard = `
-                            <div class="p-3 bg-neutral-900 hover:bg-neutral-800 border border-zinc-800 rounded-xl cursor-pointer transition-colors flex items-center justify-between group" onclick="tocarVideo('${ep.Link}')">
-                                <div>
-                                    <h4 class="font-bold text-xs text-zinc-200 group-hover:text-primary-container transition-colors">Temporada ${ep.Temporada} • Episódio ${ep.Episódio}</h4>
-                                    <span class="text-[10px] text-zinc-500 block mt-0.5">Disponível em Ultra HD</span>
-                                </div>
-                                <span class="material-symbols-outlined text-zinc-600 group-hover:text-primary-container transition-colors" style="font-variation-settings: 'FILL' 1;">play_circle</span>
-                            </div>
-                        `;
-                        container.innerHTML += itemCard;
-                    });
+    document.getElementById("player").src =
+    link;
 
-                    if(listaFiltrada.length > 0) {
-                        tocarVideo(listaFiltrada[0].Link);
-                    }
-                }
-            });
-        }
+}
 
-        function tocarVideo(link) {
-            document.getElementById("player-iframe").src = link;
-        }
-    </script>
+</script>
+
 </body>
 </html>
