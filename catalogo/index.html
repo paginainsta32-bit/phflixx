@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>PHFLIX - Filmes e Séries</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: { extend: { colors: { "background": "#131313", "primary": "#e50914" } } }
+          }
+    </script>
+    <style>
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#131313] text-[#e5e2e1] font-['Inter'] overflow-x-hidden">
+
+    <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/80 to-transparent px-8 py-4 flex justify-between items-center backdrop-blur-xs">
+        <span class="text-3xl font-black text-[#e50914] tracking-wider">PHFLIX</span>
+        <button onclick="logout()" class="text-xs bg-[#353534] text-white px-4 py-2 rounded hover:bg-red-700 transition-colors font-semibold">Sair</button>
+    </nav>
+
+    <header id="hero-bg" class="relative h-[85vh] w-full bg-cover bg-center flex items-center px-12 transition-all duration-500" style="background-image: linear-gradient(to top, #131313 10%, transparent 90%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
+        <div class="max-w-2xl space-y-4 relative z-10 pt-20">
+            <h1 id="hero-titulo" class="text-5xl font-black tracking-tight md:text-6xl text-white drop-shadow-lg">Carregando Destaque...</h1>
+            <p id="hero-descricao" class="text-base md:text-lg text-gray-300 line-clamp-3 drop-shadow-md">Conectando ao banco de dados...</p>
+            <div class="pt-4">
+                <a id="hero-link" href="#" class="bg-[#e50914] text-white px-8 py-3 rounded font-bold text-lg hover:bg-red-700 transition-colors inline-block shadow-lg">Assistir Agora</a>
+            </div>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent"></div>
+    </header>
+
+    <main class="px-12 py-8 space-y-12 relative -mt-24 z-20">
+        
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold tracking-wide border-l-4 border-[#e50914] pl-3">Filmes Disponíveis</h2>
+            <div id="container-filmes" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth">
+                </div>
+        </section>
+
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold tracking-wide border-l-4 border-[#e50914] pl-3">Séries Completas</h2>
+            <div id="container-series" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth">
+                </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-zinc-800 py-10 bg-background text-center text-sm text-gray-500">
+        <h2 class="font-black text-[#e50914] text-xl mb-2">PHFLIX</h2>
+        <p>© 2026 PHFLIX Entertainment.</p>
+    </footer>
+
+    <script>
+        if (localStorage.getItem('phflix_autenticado') !== 'true') {
+            window.location.href = '../login/index.html';
+        }
+
+        const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/395698/?user_field_names=true";
+        const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            carregarBannerDestaque();
+            carregarGradeDeConteudo();
+        });
+
+        async function carregarBannerDestaque() {
+            try {
+                const response = await fetch(TABELA_BANNERS_URL, {
+                    headers: { "Authorization": `Token ${TOKEN}` }
+                });
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    const banner = data.results[0];
+                    document.getElementById('hero-titulo').innerText = banner.titulo;
+                    document.getElementById('hero-descricao').innerText = banner.descricao;
+                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.imagem_url}')`;
+                    document.getElementById('hero-link').href = banner.link_botao;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function carregarGradeDeConteudo() {
+            Papa.parse("../dados/conteudos.csv", {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    const lista = results.data;
+                    const containerFilmes = document.getElementById("container-filmes");
+                    const containerSeries = document.getElementById("container-series");
+                    
+                    containerFilmes.innerHTML = "";
+                    containerSeries.innerHTML = "";
+
+                    lista.forEach(item => {
+                        if (!item.Nome || !item.Capa) return; // proteção contra vazios
+                        
+                        // Montagem idêntica do card do template original
+                        const card = `
+                            <div class="w-[220px] flex-none group cursor-pointer" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.toLowerCase()}')">
+                                <div class="relative aspect-[2/3] w-full rounded-lg overflow-hidden border border-zinc-800 bg-neutral-900 mb-2 shadow-md">
+                                    <img src="${item.Capa}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${item.Nome}" loading="lazy">
+                                    <div class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-xs text-[9px] font-bold px-2 py-0.5 rounded text-white border border-zinc-700 uppercase">${item.Idioma}</div>
+                                </div>
+                                <h3 class="font-bold text-sm text-zinc-100 truncate group-hover:text-[#e50914] transition-colors">${item.Nome}</h3>
+                                <p class="text-xs text-zinc-500">${item.Categoria}</p>
+                            </div>
+                        `;
+
+                        // Separa automaticamente o seu CSV baseado na coluna 'Tipo'
+                        if (item.Tipo.toLowerCase() === 'filme') {
+                            containerFilmes.innerHTML += card;
+                        } else if (item.Tipo.toLowerCase() === 'série' || item.Tipo.toLowerCase() === 'serie') {
+                            containerSeries.innerHTML += card;
+                        }
+                    });
+                }
+            });
+        }
+
+        function abrirMidia(nome, tipo) {
+            window.location.href = `../player/index.html?nome=${nome}&tipo=${tipo}`;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../login/index.html';
+        }
+    </script>
+</body>
+</html>

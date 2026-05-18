@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>PHFLIX - Entrar</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: { extend: { colors: { "background": "#131313", "primary-container": "#e50914" } } }
+          }
+    </script>
+</head>
+<body class="bg-background text-[#e5e2e1] font-['Inter'] min-h-screen flex flex-col justify-between relative">
+    
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=1600')] bg-cover bg-center opacity-20 pointer-events-none z-0"></div>
+
+    <header class="p-6 relative z-10">
+        <span class="text-3xl font-black text-[#e50914] tracking-wider">PHFLIX</span>
+    </header>
+
+    <main class="flex justify-center items-center px-4 flex-1 relative z-10">
+        <div class="w-full max-w-[450px] bg-black/80 p-16 rounded-md border border-[#353534] shadow-2xl">
+            <h1 class="text-3xl font-bold mb-7 text-white">Entrar</h1>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <input type="email" id="loginEmail" required class="w-full p-4 rounded bg-[#353534] border-none text-white focus:ring-2 focus:ring-[#e50914] placeholder-gray-400 text-sm" placeholder="Email cadastrado">
+                </div>
+                <div>
+                    <input type="password" id="loginPassword" required class="w-full p-4 rounded bg-[#353534] border-none text-white focus:ring-2 focus:ring-[#e50914] placeholder-gray-400 text-sm" placeholder="Senha">
+                </div>
+                <button type="submit" class="w-full bg-[#e50914] py-4 rounded font-bold text-white hover:bg-[#b80710] transition-colors mt-4 text-base tracking-wide">Entrar</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-black/90 p-8 border-t border-[#353534] text-center text-xs text-gray-500 relative z-10">
+        © 2026 PHFLIX Entertainment. Todos os direitos reservados.
+    </footer>
+
+    <script>
+        // Configurações Oficiais com o Token que você forneceu
+        const TABELA_USUARIOS_URL = "https://api.baserow.io/api/database/rows/table/395697/?user_field_names=true"; 
+        const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            try {
+                const response = await fetch(`${TABELA_USUARIOS_URL}&search=${encodeURIComponent(email)}`, {
+                    headers: { "Authorization": `Token ${TOKEN}` }
+                });
+                const data = await response.json();
+                
+                // Mapeia os campos retornados do Baserow
+                const usuario = data.results.find(u => u.email === email && u.password === password);
+
+                if (usuario) {
+                    localStorage.setItem('phflix_autenticado', 'true');
+                    localStorage.setItem('phflix_usuario', usuario.username);
+                    window.location.href = '../catalogo/index.html';
+                } else {
+                    alert('❌ Usuário ou senha incorretos.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao conectar com o servidor de autenticação.');
+            }
+        });
+    </script>
+</body>
+</html>
