@@ -1,66 +1,11 @@
-<!DOCTYPE html>
-<html class="dark" lang="pt-BR">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>PHFLIX - Player de Transmissão</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-              "background": "#131313",
-              "surface-container": "#201f1f",
-              "primary-container": "#e50914",
-              "on-background": "#e5e2e1"
-            }
-          }
-        }
-      }
-    </script>
-</head>
-<body class="bg-[#131313] text-[#e5e2e1] font-['Inter']">
-
-    <nav class="p-5 bg-black/50 backdrop-blur-xs flex items-center justify-between border-b border-zinc-900">
-        <a href="../catalogo/index.html" class="text-xs font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
-            ‹ Voltar ao Catálogo
-        </a>
-        <span class="text-2xl font-black text-[#e50914] tracking-tight">PHFLIX</span>
-    </nav>
-
-    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <div class="lg:col-span-2 space-y-4">
-            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
-                <iframe id="player-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-            </div>
-            <div class="p-6 bg-zinc-900/40 rounded-xl border border-zinc-900 space-y-2">
-                <div class="flex items-center gap-3">
-                    <h1 id="titulo-midia" class="text-2xl font-black text-white">Carregando...</h1>
-                    <span id="badge-tipo" class="text-[10px] bg-red-600 font-extrabold px-2 py-0.5 rounded text-white uppercase">---</span>
-                </div>
-                <p id="sinopse-midia" class="text-zinc-400 text-sm leading-relaxed">Carregando detalhes informados do catálogo...</p>
-            </div>
-        </div>
-
-        <div id="bloco-episodios" class="space-y-4" style="display: none;">
-            <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <h2 class="text-lg font-bold text-white">Episódios</h2>
-                <span id="contador-ep" class="text-xs text-zinc-500 font-semibold">0 episódios</span>
-            </div>
-            <div id="grade-episodios" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-                </div>
-        </div>
-    </main>
-
-    <script>
+<script>
         if (localStorage.getItem('phflix_autenticado') !== 'true') {
             window.location.href = '../login/index.html';
         }
+
+        const NOME_USUARIO_GIT = window.location.hostname.split('.')[0];
+        const URL_CSV_CONTEUDOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/conteudos.csv`;
+        const URL_CSV_EPISODIOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/episodios.csv`;
 
         document.addEventListener("DOMContentLoaded", () => {
             const URL_PARAMS = new URLSearchParams(window.location.search);
@@ -75,9 +20,10 @@
         });
 
         function carregarFilme(nome) {
-            Papa.parse("../dados/conteudos.csv", {
+            Papa.parse(URL_CSV_CONTEUDOS, {
                 download: true,
                 header: true,
+                skipEmptyLines: true,
                 complete: function(results) {
                     const filme = results.data.find(f => f.Nome === nome);
                     if (filme) {
@@ -93,9 +39,10 @@
         function carregarSerie(nome) {
             document.getElementById("bloco-episodios").style.display = "block";
 
-            Papa.parse("../dados/conteudos.csv", {
+            Papa.parse(URL_CSV_CONTEUDOS, {
                 download: true,
                 header: true,
+                skipEmptyLines: true,
                 complete: function(results) {
                     const serie = results.data.find(s => s.Nome === nome);
                     if (serie) {
@@ -106,10 +53,10 @@
                 }
             });
 
-            // Faz o cruzamento inteligente com o arquivo episodios.csv pelo campo Nome
-            Papa.parse("../dados/episodios.csv", {
+            Papa.parse(URL_CSV_EPISODIOS, {
                 download: true,
                 header: true,
+                skipEmptyLines: true,
                 complete: function(results) {
                     const listaFiltrada = results.data.filter(ep => ep.Nome === nome);
                     const container = document.getElementById("grade-episodios");
@@ -142,5 +89,3 @@
             document.getElementById("player-iframe").src = link;
         }
     </script>
-</body>
-</html>
