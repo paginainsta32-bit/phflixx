@@ -1,4 +1,73 @@
-<script>
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>PHFLIX - Player Cinematográfico</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "background": "#131313",
+              "surface-container-high": "#2a2a2a",
+              "surface-container": "#201f1f",
+              "primary-container": "#e50914",
+              "on-background": "#e5e2e1",
+              "secondary": "#c8c6c5",
+              "outline-variant": "#5e3f3b"
+            },
+            "spacing": {
+              "margin-desktop": "60px",
+              "gutter": "16px"
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-[#131313] text-[#e5e2e1] font-['Inter']">
+
+    <nav class="p-5 bg-black/60 backdrop-blur-md flex items-center justify-between border-b border-zinc-900 sticky top-0 z-50">
+        <a href="../catalogo/index.html" class="text-xs font-bold text-zinc-400 hover:text-white transition-all flex items-center gap-1 hover:scale-105">
+            <span class="material-symbols-outlined text-sm">arrow_back</span> Voltar ao Catálogo
+        </a>
+        <span class="text-2xl font-black text-[#e50914] tracking-tighter">PHFLIX</span>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-4">
+            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
+                <iframe id="player-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            </div>
+            <div class="p-6 bg-surface-container rounded-xl border border-zinc-900 space-y-3">
+                <div class="flex items-center gap-3">
+                    <h1 id="titulo-midia" class="text-2xl font-black text-white tracking-tight">Carregando Título...</h1>
+                    <span id="badge-tipo" class="text-[10px] bg-[#e50914] font-extrabold px-2 py-0.5 rounded text-white uppercase tracking-wider">---</span>
+                </div>
+                <p id="sinopse-midia" class="text-secondary text-sm leading-relaxed">Buscando a sinopse cadastrada na tabela de conteúdos...</p>
+            </div>
+        </div>
+
+        <div id="bloco-episodios" class="space-y-4 bg-surface-container/30 p-4 rounded-xl border border-zinc-900" style="display: none;">
+            <div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+                <h2 class="text-base font-bold text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">video_library</span> Episódios
+                </h2>
+                <span id="contador-ep" class="text-xs text-secondary font-bold">0 episódios</span>
+            </div>
+            <div id="grade-episodios" class="space-y-3 max-h-[480px] overflow-y-auto pr-2 custom-scrollbar">
+                </div>
+        </div>
+    </main>
+
+    <script>
         if (localStorage.getItem('phflix_autenticado') !== 'true') {
             window.location.href = '../login/index.html';
         }
@@ -28,7 +97,7 @@
                     const filme = results.data.find(f => f.Nome === nome);
                     if (filme) {
                         document.getElementById("titulo-midia").innerText = filme.Nome;
-                        document.getElementById("sinopse-midia").innerText = filme.Sinopse || "Sinopse não disponível para este filme.";
+                        document.getElementById("sinopse-midia").innerText = filme.Sinopse || "Sinopse não cadastrada para este filme.";
                         document.getElementById("badge-tipo").innerText = filme.Tipo;
                         document.getElementById("player-iframe").src = filme.Link;
                     }
@@ -39,6 +108,7 @@
         function carregarSerie(nome) {
             document.getElementById("bloco-episodios").style.display = "block";
 
+            // Carrega dados principais da série
             Papa.parse(URL_CSV_CONTEUDOS, {
                 download: true,
                 header: true,
@@ -47,12 +117,13 @@
                     const serie = results.data.find(s => s.Nome === nome);
                     if (serie) {
                         document.getElementById("titulo-midia").innerText = serie.Nome;
-                        document.getElementById("sinopse-midia").innerText = serie.Sinopse || "Sinopse não disponível para esta série.";
+                        document.getElementById("sinopse-midia").innerText = serie.Sinopse || "Sinopse não cadastrada para esta série.";
                         document.getElementById("badge-tipo").innerText = serie.Tipo;
                     }
                 }
             });
 
+            // Cruza e filtra os episódios corretos usando a coluna Nome do episodios.csv
             Papa.parse(URL_CSV_EPISODIOS, {
                 download: true,
                 header: true,
@@ -66,18 +137,20 @@
 
                     listaFiltrada.forEach(ep => {
                         if(!ep.Episódio) return;
+                        // Design de listagem comprimida premium idêntica ao original
                         const itemCard = `
                             <div class="p-3 bg-neutral-900 hover:bg-neutral-800 border border-zinc-800 rounded-xl cursor-pointer transition-colors flex items-center justify-between group" onclick="tocarVideo('${ep.Link}')">
                                 <div>
-                                    <h4 class="font-bold text-xs text-zinc-200 group-hover:text-[#e50914] transition-colors">Temporada ${ep.Temporada} • Ep ${ep.Episódio}</h4>
-                                    <span class="text-[10px] text-zinc-500 block mt-0.5">Disponível em HD</span>
+                                    <h4 class="font-bold text-xs text-zinc-200 group-hover:text-primary-container transition-colors">Temporada ${ep.Temporada} • Episódio ${ep.Episódio}</h4>
+                                    <span class="text-[10px] text-zinc-500 block mt-0.5">Disponível em Ultra HD</span>
                                 </div>
-                                <span class="text-xs bg-zinc-800 text-zinc-400 font-bold px-2.5 py-1 rounded group-hover:bg-[#e50914] group-hover:text-white transition-all">PLAY</span>
+                                <span class="material-symbols-outlined text-zinc-600 group-hover:text-primary-container transition-colors" style="font-variation-settings: 'FILL' 1;">play_circle</span>
                             </div>
                         `;
                         container.innerHTML += itemCard;
                     });
 
+                    // Inicia o player direto no primeiro episódio da lista
                     if(listaFiltrada.length > 0) {
                         tocarVideo(listaFiltrada[0].Link);
                     }
@@ -89,3 +162,5 @@
             document.getElementById("player-iframe").src = link;
         }
     </script>
+</body>
+</html>
