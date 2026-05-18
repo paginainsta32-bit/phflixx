@@ -88,92 +88,132 @@
     </footer>
 
     <script>
-        if (localStorage.getItem('phflix_autenticado') !== 'true') {
-            window.location.href = '../login/index.html';
-        } else {
-            document.getElementById('user-display').innerText = `Olá, ${localStorage.getItem('phflix_usuario') || 'Usuário'}`;
-        }
+if (localStorage.getItem('phflix_autenticado') !== 'true') {
+    window.location.href = '../login/index.html';
+} else {
+    document.getElementById('user-display').innerText =
+        `Olá, ${localStorage.getItem('phflix_usuario') || 'Usuário'}`;
+}
 
-        const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
-        const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
+const TABELA_BANNERS_URL =
+    "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
 
-        // SOLUÇÃO DEFINITIVA: Caminho relativo que ignora o nome do repositório! Funciona em qualquer link!
-        const URL_LOCAL_CONTEUDOS = "../dados/conteudos.csv";
+const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
 
-        document.addEventListener("DOMContentLoaded", () => {
-            carregarBannerDestaque();
-            carregarGridDeFilmesESeries();
+const URL_GLOBAL_CONTEUDOS =
+    "https://paginainsta32-bit.github.io/phflixx/dados/conteudos.csv";
+
+document.addEventListener("DOMContentLoaded", () => {
+    carregarBannerDestaque();
+    carregarGridDeFilmesESeries();
+});
+
+async function carregarBannerDestaque() {
+    try {
+        const response = await fetch(TABELA_BANNERS_URL, {
+            headers: {
+                "Authorization": `Token ${TOKEN}`
+            }
         });
 
-        async function carregarBannerDestaque() {
-            try {
-                const response = await fetch(TABELA_BANNERS_URL, {
-                    headers: { "Authorization": `Token ${TOKEN}` }
-                });
-                const data = await response.json();
-                if (data.results && data.results.length > 0) {
-                    const banner = data.results[0];
-                    document.getElementById('hero-titulo').innerText = banner.titulo;
-                    document.getElementById('hero-descricao').innerText = banner['descrição'];
-                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.Imagem}')`;
-                    document.getElementById('hero-link').href = banner.Link;
-                }
-            } catch (err) {
-                console.error(err);
-            }
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+
+            const banner = data.results[0];
+
+            document.getElementById('hero-titulo').innerText =
+                banner.titulo || "PHFLIX";
+
+            document.getElementById('hero-descricao').innerText =
+                banner['descrição'] || "";
+
+            document.getElementById('hero-bg').style.backgroundImage =
+                `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.Imagem}')`;
+
+            document.getElementById('hero-link').href =
+                banner.Link || "#";
         }
 
-        function carregarGridDeFilmesESeries() {
-            Papa.parse(URL_LOCAL_CONTEUDOS, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    const lista = results.data;
-                    const containerFilmes = document.getElementById("container-filmes");
-                    const containerSeries = document.getElementById("container-series");
-                    
-                    containerFilmes.innerHTML = "";
-                    containerSeries.innerHTML = "";
+    } catch (err) {
+        console.log(err);
+    }
+}
 
-                    lista.forEach(item => {
-                        if (!item.Nome || !item.Capa || !item.Tipo) return;
-                        
-                        const card = `
-                            <div class="w-[180px] md:w-[200px] flex-none group cursor-pointer relative" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.trim().toLowerCase()}')">
-                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#201f1f] mb-3 cinematic-shadow relative border border-zinc-800">
-                                    <img src="${item.Capa}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${item.Nome}" loading="lazy">
-                                    <div class="absolute top-2 right-2 bg-[#e50914] text-white text-[9px] font-extrabold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-md">${item.Idioma || 'DUB'}</div>
-                                </div>
-                                <div class="space-y-1">
-                                    <h3 class="font-bold text-sm text-on-surface truncate group-hover:text-[#e50914] transition-colors">${item.Nome}</h3>
-                                    <span class="text-xs text-secondary block">${item.Categoria || ''}</span>
-                                </div>
-                            </div>
-                        `;
+function carregarGridDeFilmesESeries() {
 
-                        const tipoTratado = item.Tipo.trim().toLowerCase();
-                        if (tipoTratado === 'filme') {
-                            containerFilmes.innerHTML += card;
-                        } else if (tipoTratado === 'série' || tipoTratado === 'serie') {
-                            containerSeries.innerHTML += card;
-                        }
-                    });
+    Papa.parse(URL_GLOBAL_CONTEUDOS, {
 
-                    if(containerFilmes.innerHTML === "") containerFilmes.innerHTML = '<p class="text-xs text-zinc-500">Nenhum filme listado.</p>';
-                    if(containerSeries.innerHTML === "") containerSeries.innerHTML = '<p class="text-xs text-zinc-500">Nenhuma série listada.</p>';
+        download: true,
+        header: true,
+        delimiter: ";",
+        skipEmptyLines: true,
+
+        complete: function(results) {
+
+            console.log(results.data);
+
+            const lista = results.data;
+
+            const containerFilmes =
+                document.getElementById("container-filmes");
+
+            const containerSeries =
+                document.getElementById("container-series");
+
+            containerFilmes.innerHTML = "";
+            containerSeries.innerHTML = "";
+
+            lista.forEach(item => {
+
+                if (!item.Nome) return;
+
+                const tipo =
+                    (item.Tipo || "").trim().toLowerCase();
+
+                const card = `
+                    <div class="w-[180px] flex-none cursor-pointer"
+                    onclick="abrirMidia('${encodeURIComponent(item.Nome)}','${tipo}')">
+
+                        <div class="aspect-[2/3] overflow-hidden rounded-xl bg-zinc-900">
+                            <img src="${item.Capa}"
+                            class="w-full h-full object-cover">
+                        </div>
+
+                        <h3 class="mt-2 text-sm font-bold truncate">
+                            ${item.Nome}
+                        </h3>
+                    </div>
+                `;
+
+                if (tipo === "filme") {
+                    containerFilmes.innerHTML += card;
                 }
+
+                if (tipo === "serie" || tipo === "série") {
+                    containerSeries.innerHTML += card;
+                }
+
             });
+
+        },
+
+        error: function(err) {
+            console.log("ERRO CSV:", err);
         }
 
-        function abrirMidia(nome, tipo) {
-            window.location.href = `../player/index.html?nome=${nome}&tipo=${tipo}`;
-        }
+    });
+}
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = '../login/index.html';
-        }
-    </script>
+function abrirMidia(nome, tipo) {
+    window.location.href =
+        `../player/index.html?nome=${nome}&tipo=${tipo}`;
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = '../login/index.html';
+}
+</script>
 </body>
 </html>
