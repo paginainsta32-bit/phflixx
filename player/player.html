@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="dark" lang="pt-BR">
 <head>
     <meta charset="utf-8"/>
@@ -24,7 +24,6 @@
     </nav>
 
     <main class="max-w-5xl mx-auto p-6 space-y-6">
-        
         <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
             <iframe id="player-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
@@ -34,13 +33,12 @@
                 <h1 id="titulo-midia" class="text-3xl font-black text-white">Carregando...</h1>
                 <span id="badge-tipo" class="text-[10px] bg-zinc-800 text-zinc-300 font-extrabold px-2.5 py-0.5 rounded border border-zinc-700 uppercase">---</span>
             </div>
-            <p id="sinopse-midia" class="text-zinc-400 text-sm leading-relaxed">Carregando detalhes e sinopse do conteúdo selecionado...</p>
+            <p id="sinopse-midia" class="text-zinc-400 text-sm leading-relaxed">Carregando detalhes e sinopse...</p>
         </div>
 
         <section id="bloco-episodios" class="space-y-4 pt-4" style="display: none;">
             <h2 class="text-xl font-bold border-l-4 border-[#e50914] pl-3">Lista de Episódios</h2>
-            <div id="grade-episodios" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                </div>
+            <div id="grade-episodios" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
         </section>
     </main>
 
@@ -80,7 +78,6 @@
         function carregarSerie(nome) {
             document.getElementById("bloco-episodios").style.display = "block";
 
-            // 1. Busca os metadados da série
             Papa.parse("../dados/conteudos.csv", {
                 download: true,
                 header: true,
@@ -94,7 +91,7 @@
                 }
             });
 
-            // 2. Filtra os episódios utilizando a coluna 'Nome' do seu segundo CSV
+            // Filtra os episódios batendo a coluna Nome do CSV de Episódios com o Nome da Série
             Papa.parse("../dados/episodios.csv", {
                 download: true,
                 header: true,
@@ -110,9 +107,9 @@
                         
                         const itemCard = `
                             <div class="flex flex-col p-3 bg-neutral-950/60 hover:bg-neutral-900 border border-zinc-900 rounded-lg cursor-pointer transition-all group" onclick="tocarVideo('${ep.Link}')">
-                                <div class="w-full aspect-video rounded bg-zinc-900 overflow-hidden mb-2 relative">
-                                    <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/10 transition-colors">
-                                        <span class="text-xs font-bold text-white bg-red-600/90 px-2 py-1 rounded">PLAY EP ${ep.Episódio}</span>
+                                <div class="w-full aspect-video rounded bg-zinc-900 overflow-hidden mb-2 relative flex items-center justify-center border border-zinc-800">
+                                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                                        <span class="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded">PLAY EPISÓDIO ${ep.Episódio}</span>
                                     </div>
                                 </div>
                                 <h4 class="font-bold text-xs text-zinc-200 truncate">Temporada ${ep.Temporada} - Episódio ${ep.Episódio}</h4>
@@ -121,7 +118,6 @@
                         container.innerHTML += itemCard;
                     });
 
-                    // Inicia o player direto no Episódio 1 se houver itens cadastrados
                     if(listaFiltrada.length > 0) {
                         tocarVideo(listaFiltrada[0].Link);
                     }
