@@ -33,15 +33,14 @@
 </head>
 <body class="bg-[#131313] text-[#e5e2e1] font-['Inter']">
 
-    <nav class="p-5 bg-black/60 backdrop-blur-md flex items-center justify-between border-b border-zinc-900 sticky top-0 z-50">
-        <a href="../catalogo/index.html" class="text-xs font-bold text-zinc-400 hover:text-white transition-all flex items-center gap-1 hover:scale-105">
+    <nav class="p-5 bg-black/50 backdrop-blur-md flex items-center justify-between border-b border-zinc-900 sticky top-0 z-50">
+        <a href="../catalogo/index.html" class="text-xs font-bold text-zinc-400 hover:text-white transition-all flex items-center gap-1">
             <span class="material-symbols-outlined text-sm">arrow_back</span> Voltar ao Catálogo
         </a>
-        <span class="text-2xl font-black text-[#e50914] tracking-tighter">PHFLIX</span>
+        <span class="text-2xl font-black text-[#e50914] tracking-tight">PHFLIX</span>
     </nav>
 
     <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         <div class="lg:col-span-2 space-y-4">
             <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
                 <iframe id="player-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
@@ -51,7 +50,7 @@
                     <h1 id="titulo-midia" class="text-2xl font-black text-white tracking-tight">Carregando Título...</h1>
                     <span id="badge-tipo" class="text-[10px] bg-[#e50914] font-extrabold px-2 py-0.5 rounded text-white uppercase tracking-wider">---</span>
                 </div>
-                <p id="sinopse-midia" class="text-secondary text-sm leading-relaxed">Buscando a sinopse cadastrada na tabela de conteúdos...</p>
+                <p id="sinopse-midia" class="text-secondary text-sm leading-relaxed">Buscando detalhes...</p>
             </div>
         </div>
 
@@ -62,8 +61,7 @@
                 </h2>
                 <span id="contador-ep" class="text-xs text-secondary font-bold">0 episódios</span>
             </div>
-            <div id="grade-episodios" class="space-y-3 max-h-[480px] overflow-y-auto pr-2 custom-scrollbar">
-                </div>
+            <div id="grade-episodios" class="space-y-3 max-h-[480px] overflow-y-auto pr-2"></div>
         </div>
     </main>
 
@@ -79,7 +77,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             const URL_PARAMS = new URLSearchParams(window.location.search);
             const NOME_MIDIA = decodeURIComponent(URL_PARAMS.get('nome'));
-            const TIPO_MIDIA = URL_PARAMS.get('tipo');
+            const TIPO_MIDIA = URL_PARAMS.get('tipo').trim().toLowerCase();
 
             if (TIPO_MIDIA === 'filme') {
                 carregarFilme(NOME_MIDIA);
@@ -97,7 +95,7 @@
                     const filme = results.data.find(f => f.Nome === nome);
                     if (filme) {
                         document.getElementById("titulo-midia").innerText = filme.Nome;
-                        document.getElementById("sinopse-midia").innerText = filme.Sinopse || "Sinopse não cadastrada para este filme.";
+                        document.getElementById("sinopse-midia").innerText = filme.Sinopse && filme.Sinopse !== 'NaN' ? filme.Sinopse : "Sinopse disponível no reprodutor.";
                         document.getElementById("badge-tipo").innerText = filme.Tipo;
                         document.getElementById("player-iframe").src = filme.Link;
                     }
@@ -108,7 +106,6 @@
         function carregarSerie(nome) {
             document.getElementById("bloco-episodios").style.display = "block";
 
-            // Carrega dados principais da série
             Papa.parse(URL_CSV_CONTEUDOS, {
                 download: true,
                 header: true,
@@ -117,13 +114,12 @@
                     const serie = results.data.find(s => s.Nome === nome);
                     if (serie) {
                         document.getElementById("titulo-midia").innerText = serie.Nome;
-                        document.getElementById("sinopse-midia").innerText = serie.Sinopse || "Sinopse não cadastrada para esta série.";
+                        document.getElementById("sinopse-midia").innerText = serie.Sinopse && serie.Sinopse !== 'NaN' ? serie.Sinopse : "Sinopse disponível no reprodutor.";
                         document.getElementById("badge-tipo").innerText = serie.Tipo;
                     }
                 }
             });
 
-            // Cruza e filtra os episódios corretos usando a coluna Nome do episodios.csv
             Papa.parse(URL_CSV_EPISODIOS, {
                 download: true,
                 header: true,
@@ -137,7 +133,6 @@
 
                     listaFiltrada.forEach(ep => {
                         if(!ep.Episódio) return;
-                        // Design de listagem comprimida premium idêntica ao original
                         const itemCard = `
                             <div class="p-3 bg-neutral-900 hover:bg-neutral-800 border border-zinc-800 rounded-xl cursor-pointer transition-colors flex items-center justify-between group" onclick="tocarVideo('${ep.Link}')">
                                 <div>
@@ -150,7 +145,6 @@
                         container.innerHTML += itemCard;
                     });
 
-                    // Inicia o player direto no primeiro episódio da lista
                     if(listaFiltrada.length > 0) {
                         tocarVideo(listaFiltrada[0].Link);
                     }
