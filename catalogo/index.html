@@ -35,7 +35,6 @@
       }
     </script>
     <style>
-        /* Remove a barra de rolagem visual mantendo o deslize funcionando */
         .scrollbar-none::-webkit-scrollbar { display: none; }
         .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -60,7 +59,7 @@
     <header id="hero-bg" class="relative h-[80vh] w-full bg-cover bg-center flex items-center px-margin-desktop transition-all duration-500" style="background-image: linear-gradient(to top, #131313 10%, transparent 90%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
         <div class="max-w-2xl space-y-4 relative z-10 pt-16">
             <h1 id="hero-titulo" class="text-4xl font-black md:text-6xl text-white tracking-tight drop-shadow-2xl">Carregando Destaque...</h1>
-            <p id="hero-descricao" class="text-sm md:text-base text-secondary line-clamp-3 leading-relaxed drop-shadow-md">Conectando ao servidor seguro...</p>
+            <p id="hero-descricao" class="text-sm md:text-base text-secondary line-clamp-3 leading-relaxed drop-shadow-md">Conectando ao banco de dados...</p>
             <div class="pt-2">
                 <a id="hero-link" href="#" class="bg-[#e50914] text-white px-8 py-3 rounded-lg font-bold text-base hover:bg-red-700 transition-colors inline-flex items-center gap-2 shadow-2xl">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span> Assistir Agora
@@ -71,19 +70,14 @@
     </header>
 
     <main class="px-margin-desktop py-8 space-y-12 relative -mt-16 z-20">
-        
         <section class="space-y-4">
             <h2 id="titulo-filmes" class="text-2xl font-bold tracking-tight text-white border-l-4 border-[#e50914] pl-3">Filmes Disponíveis</h2>
-            <div id="container-filmes" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth">
-                <p class="text-sm text-zinc-500">Buscando lista de filmes...</p>
-            </div>
+            <div id="container-filmes" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"></div>
         </section>
 
         <section class="space-y-4 pt-4">
             <h2 id="titulo-series" class="text-2xl font-bold tracking-tight text-white border-l-4 border-[#e50914] pl-3">Séries Completas</h2>
-            <div id="container-series" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth">
-                <p class="text-sm text-zinc-500">Buscando lista de séries...</p>
-            </div>
+            <div id="container-series" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"></div>
         </section>
     </main>
 
@@ -102,8 +96,8 @@
         const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
         const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
 
-        const NOME_USUARIO_GIT = window.location.hostname.split('.')[0];
-        const URL_CSV_CONTEUDOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/conteudos.csv`;
+        // CAMINHO CORRIGIDO: Puxando localmente da sua pasta de dados provada no print!
+        const URL_LOCAL_CONTEUDOS = "../dados/conteudos.csv";
 
         document.addEventListener("DOMContentLoaded", () => {
             carregarBannerDestaque();
@@ -129,7 +123,7 @@
         }
 
         function carregarGridDeFilmesESeries() {
-            Papa.parse(URL_CSV_CONTEUDOS, {
+            Papa.parse(URL_LOCAL_CONTEUDOS, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
@@ -144,10 +138,9 @@
                     lista.forEach(item => {
                         if (!item.Nome || !item.Capa || !item.Tipo) return;
                         
-                        // Layout estrutural vertical idêntico de cinema
                         const card = `
                             <div class="w-[180px] md:w-[200px] flex-none group cursor-pointer relative" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.trim().toLowerCase()}')">
-                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface-container mb-3 cinematic-shadow relative border border-zinc-800">
+                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#201f1f] mb-3 cinematic-shadow relative border border-zinc-800">
                                     <img src="${item.Capa}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${item.Nome}" loading="lazy">
                                     <div class="absolute top-2 right-2 bg-[#e50914] text-white text-[9px] font-extrabold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-md">${item.Idioma || 'DUB'}</div>
                                 </div>
@@ -158,7 +151,6 @@
                             </div>
                         `;
 
-                        // Correção cirúrgica: Tratando maiúsculas e acentos ("Filme", "Série", "Serie") vindos do seu arquivo
                         const tipoTratado = item.Tipo.trim().toLowerCase();
                         if (tipoTratado === 'filme') {
                             containerFilmes.innerHTML += card;
@@ -167,7 +159,6 @@
                         }
                     });
 
-                    // Caso a lista venha vazia por segurança de carregamento
                     if(containerFilmes.innerHTML === "") containerFilmes.innerHTML = '<p class="text-xs text-zinc-500">Nenhum filme listado.</p>';
                     if(containerSeries.innerHTML === "") containerSeries.innerHTML = '<p class="text-xs text-zinc-500">Nenhuma série listada.</p>';
                 }
