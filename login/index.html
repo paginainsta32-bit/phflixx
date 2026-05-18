@@ -55,7 +55,7 @@
                 });
                 const data = await response.json();
                 
-                // Mapeado exatamente com: Email e Senha (com maiúsculas)
+                // Mapeado com as colunas reais em português do seu print: Email e Senha
                 const usuario = data.results.find(u => u.Email === emailDigitado && u.Senha === senhaDigitada);
 
                 if (usuario) {
