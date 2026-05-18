@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="dark" lang="pt-BR">
 <head>
     <meta charset="utf-8"/>
@@ -37,17 +37,14 @@
     </header>
 
     <main class="px-12 py-8 space-y-12 relative -mt-24 z-20">
-        
         <section class="space-y-4">
             <h2 class="text-xl font-bold tracking-wide border-l-4 border-[#e50914] pl-3">Filmes Disponíveis</h2>
-            <div id="container-filmes" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth">
-                </div>
+            <div id="container-filmes" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"></div>
         </section>
 
         <section class="space-y-4">
             <h2 class="text-xl font-bold tracking-wide border-l-4 border-[#e50914] pl-3">Séries Completas</h2>
-            <div id="container-series" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth">
-                </div>
+            <div id="container-series" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"></div>
         </section>
     </main>
 
@@ -61,10 +58,9 @@
             window.location.href = '../login/index.html';
         }
 
-        // ID Atualizado conforme sua tabela real de Banners: 982353
-const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
-const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
-        
+        const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
+        const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
+
         document.addEventListener("DOMContentLoaded", () => {
             carregarBannerDestaque();
             carregarGradeDeConteudo();
@@ -78,10 +74,12 @@ const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
                 const data = await response.json();
                 if (data.results && data.results.length > 0) {
                     const banner = data.results[0];
+                    
+                    // Mapeado exatamente com: titulo, descrição, Imagem, Link
                     document.getElementById('hero-titulo').innerText = banner.titulo;
-                    document.getElementById('hero-descricao').innerText = banner.descricao;
-                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.imagem_url}')`;
-                    document.getElementById('hero-link').href = banner.link_botao;
+                    document.getElementById('hero-descricao').innerText = banner['descrição'];
+                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.Imagem}')`;
+                    document.getElementById('hero-link').href = banner.Link;
                 }
             } catch (err) {
                 console.error(err);
@@ -101,9 +99,8 @@ const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
                     containerSeries.innerHTML = "";
 
                     lista.forEach(item => {
-                        if (!item.Nome || !item.Capa) return; // proteção contra vazios
+                        if (!item.Nome || !item.Capa) return;
                         
-                        // Montagem idêntica do card do template original
                         const card = `
                             <div class="w-[220px] flex-none group cursor-pointer" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.toLowerCase()}')">
                                 <div class="relative aspect-[2/3] w-full rounded-lg overflow-hidden border border-zinc-800 bg-neutral-900 mb-2 shadow-md">
@@ -115,7 +112,6 @@ const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
                             </div>
                         `;
 
-                        // Separa automaticamente o seu CSV baseado na coluna 'Tipo'
                         if (item.Tipo.toLowerCase() === 'filme') {
                             containerFilmes.innerHTML += card;
                         } else if (item.Tipo.toLowerCase() === 'série' || item.Tipo.toLowerCase() === 'serie') {
