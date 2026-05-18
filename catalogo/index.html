@@ -8,48 +8,58 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
-          tailwind.config = {
-            darkMode: "class",
-            theme: { extend: { colors: { "background": "#131313", "primary": "#e50914" } } }
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "background": "#131313",
+              "surface-container": "#201f1f",
+              "primary-container": "#e50914",
+              "on-background": "#e5e2e1",
+              "secondary": "#c8c6c5",
+              "primary": "#ffb4aa"
+            }
           }
+        }
+      }
     </script>
-    <style>
-        .scrollbar-none::-webkit-scrollbar { display: none; }
-        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
 </head>
 <body class="bg-[#131313] text-[#e5e2e1] font-['Inter'] overflow-x-hidden">
 
-    <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/80 to-transparent px-8 py-4 flex justify-between items-center backdrop-blur-xs">
-        <span class="text-3xl font-black text-[#e50914] tracking-wider">PHFLIX</span>
-        <button onclick="logout()" class="text-xs bg-[#353534] text-white px-4 py-2 rounded hover:bg-red-700 transition-colors font-semibold">Sair</button>
+    <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/90 to-transparent px-12 py-5 flex justify-between items-center backdrop-blur-xs">
+        <span class="text-3xl font-black text-[#e50914] tracking-tighter">PHFLIX</span>
+        <button onclick="logout()" class="text-xs bg-[#353534] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-bold tracking-wide">Sair</button>
     </nav>
 
-    <header id="hero-bg" class="relative h-[85vh] w-full bg-cover bg-center flex items-center px-12 transition-all duration-500" style="background-image: linear-gradient(to top, #131313 10%, transparent 90%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
-        <div class="max-w-2xl space-y-4 relative z-10 pt-20">
-            <h1 id="hero-titulo" class="text-5xl font-black tracking-tight md:text-6xl text-white drop-shadow-lg">Carregando Destaque...</h1>
-            <p id="hero-descricao" class="text-base md:text-lg text-gray-300 line-clamp-3 drop-shadow-md">Conectando ao banco de dados...</p>
-            <div class="pt-4">
-                <a id="hero-link" href="#" class="bg-[#e50914] text-white px-8 py-3 rounded font-bold text-lg hover:bg-red-700 transition-colors inline-block shadow-lg">Assistir Agora</a>
+    <header id="hero-bg" class="relative h-[80vh] w-full bg-cover bg-center flex items-center px-12 transition-all duration-500" style="background-image: linear-gradient(to top, #131313 12%, transparent 88%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
+        <div class="max-w-2xl space-y-4 relative z-10 pt-24">
+            <h1 id="hero-titulo" class="text-5xl font-black md:text-6xl text-white drop-shadow-xl tracking-tight">Carregando Destaque...</h1>
+            <p id="hero-descricao" class="text-sm md:text-base text-gray-300 line-clamp-3 drop-shadow-md leading-relaxed">Conectando aos servidores seguros do banco de dados do site...</p>
+            <div class="pt-2">
+                <a id="hero-link" href="#" class="bg-[#e50914] text-white px-8 py-3 rounded-lg font-bold text-base hover:bg-red-700 transition-colors inline-block shadow-2xl">Assistir Agora</a>
             </div>
         </div>
-        <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
     </header>
 
-    <main class="px-12 py-8 space-y-12 relative -mt-24 z-20">
+    <main class="px-12 py-8 space-y-12 relative -mt-16 z-20">
+        
         <section class="space-y-4">
-            <h2 class="text-xl font-bold tracking-wide border-l-4 border-[#e50914] pl-3">Filmes Disponíveis</h2>
-            <div id="container-filmes" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"></div>
+            <h2 class="text-2xl font-bold tracking-tight border-l-4 border-[#e50914] pl-3 text-white">Filmes</h2>
+            <div id="container-filmes" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                </div>
         </section>
 
-        <section class="space-y-4">
-            <h2 class="text-xl font-bold tracking-wide border-l-4 border-[#e50914] pl-3">Séries Completas</h2>
-            <div id="container-series" class="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"></div>
+        <section class="space-y-4 pt-4">
+            <h2 class="text-2xl font-bold tracking-tight border-l-4 border-[#e50914] pl-3 text-white">Séries</h2>
+            <div id="container-series" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                </div>
         </section>
     </main>
 
-    <footer class="border-t border-zinc-800 py-10 bg-background text-center text-sm text-gray-500">
-        <h2 class="font-black text-[#e50914] text-xl mb-2">PHFLIX</h2>
+    <footer class="border-t border-zinc-800 py-12 bg-background text-center text-xs text-gray-500">
+        <div class="text-2xl font-black text-[#e50914] mb-2 tracking-tighter">PHFLIX</div>
         <p>© 2026 PHFLIX Entertainment.</p>
     </footer>
 
@@ -63,7 +73,7 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             carregarBannerDestaque();
-            carregarGradeDeConteudo();
+            carregarGridDeFilmesESeries();
         });
 
         async function carregarBannerDestaque() {
@@ -74,11 +84,9 @@
                 const data = await response.json();
                 if (data.results && data.results.length > 0) {
                     const banner = data.results[0];
-                    
-                    // Mapeia exatamente as colunas em português do seu print: titulo, descrição, Imagem, Link
                     document.getElementById('hero-titulo').innerText = banner.titulo;
                     document.getElementById('hero-descricao').innerText = banner['descrição'];
-                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.Imagem}')`;
+                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 12%, transparent 88%), url('${banner.Imagem}')`;
                     document.getElementById('hero-link').href = banner.Link;
                 }
             } catch (err) {
@@ -86,7 +94,8 @@
             }
         }
 
-        function carregarGradeDeConteudo() {
+        // Lê o arquivo conteudos.csv mapeando exatamente pelas colunas lidas de dentro dele
+        function carregarGridDeFilmesESeries() {
             Papa.parse("../dados/conteudos.csv", {
                 download: true,
                 header: true,
@@ -102,13 +111,15 @@
                         if (!item.Nome || !item.Capa || !item.Tipo) return;
                         
                         const card = `
-                            <div class="w-[180px] flex-none group cursor-pointer" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.toLowerCase()}')">
-                                <div class="relative aspect-[2/3] w-full rounded-lg overflow-hidden border border-zinc-800 bg-neutral-900 mb-2 shadow-md">
-                                    <img src="${item.Capa}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${item.Nome}" loading="lazy">
-                                    <div class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-xs text-[9px] font-bold px-2 py-0.5 rounded text-white border border-zinc-700 uppercase">${item.Idioma || ''}</div>
+                            <div class="group cursor-pointer relative" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.toLowerCase()}')">
+                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface-container mb-3 relative border border-zinc-800 shadow-md">
+                                    <img src="${item.Capa}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${item.Nome}" loading="lazy">
+                                    <div class="absolute top-2 right-2 bg-gradient-to-r from-red-700 to-red-600 text-[9px] font-extrabold px-2 py-0.5 rounded-sm uppercase tracking-wider text-white shadow-sm">${item.Idioma || 'DUB'}</div>
                                 </div>
-                                <h3 class="font-bold text-sm text-zinc-100 truncate group-hover:text-[#e50914] transition-colors">${item.Nome}</h3>
-                                <p class="text-xs text-zinc-500">${item.Categoria || ''}</p>
+                                <div class="space-y-0.5">
+                                    <h3 class="font-semibold text-sm text-zinc-200 truncate group-hover:text-[#e50914] transition-colors">${item.Nome}</h3>
+                                    <span class="text-xs text-zinc-500 block">${item.Categoria || ''}</span>
+                                </div>
                             </div>
                         `;
 
