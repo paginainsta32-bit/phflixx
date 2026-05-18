@@ -70,9 +70,9 @@
             window.location.href = '../login/index.html';
         }
 
-        const NOME_USUARIO_GIT = window.location.hostname.split('.')[0];
-        const URL_CSV_CONTEUDOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/conteudos.csv`;
-        const URL_CSV_EPISODIOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/episodios.csv`;
+        // CAMINHOS CORRIGIDOS: Apontando direto para a pasta dados na raiz
+        const URL_LOCAL_CONTEUDOS = "../dados/conteudos.csv";
+        const URL_LOCAL_EPISODIOS = "../dados/episodios.csv";
 
         document.addEventListener("DOMContentLoaded", () => {
             const URL_PARAMS = new URLSearchParams(window.location.search);
@@ -87,7 +87,7 @@
         });
 
         function carregarFilme(nome) {
-            Papa.parse(URL_CSV_CONTEUDOS, {
+            Papa.parse(URL_LOCAL_CONTEUDOS, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
@@ -106,7 +106,7 @@
         function carregarSerie(nome) {
             document.getElementById("bloco-episodios").style.display = "block";
 
-            Papa.parse(URL_CSV_CONTEUDOS, {
+            Papa.parse(URL_LOCAL_CONTEUDOS, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
@@ -120,7 +120,7 @@
                 }
             });
 
-            Papa.parse(URL_CSV_EPISODIOS, {
+            Papa.parse(URL_LOCAL_EPISODIOS, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
