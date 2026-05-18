@@ -75,7 +75,7 @@
                 if (data.results && data.results.length > 0) {
                     const banner = data.results[0];
                     
-                    // Mapeado exatamente com: titulo, descrição, Imagem, Link
+                    // Mapeado 100% em português como no seu último print: titulo, descrição, Imagem, Link
                     document.getElementById('hero-titulo').innerText = banner.titulo;
                     document.getElementById('hero-descricao').innerText = banner['descrição'];
                     document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.Imagem}')`;
@@ -99,16 +99,16 @@
                     containerSeries.innerHTML = "";
 
                     lista.forEach(item => {
-                        if (!item.Nome || !item.Capa) return;
+                        if (!item.Nome || !item.Capa || !item.Tipo) return;
                         
                         const card = `
                             <div class="w-[220px] flex-none group cursor-pointer" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.toLowerCase()}')">
                                 <div class="relative aspect-[2/3] w-full rounded-lg overflow-hidden border border-zinc-800 bg-neutral-900 mb-2 shadow-md">
                                     <img src="${item.Capa}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${item.Nome}" loading="lazy">
-                                    <div class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-xs text-[9px] font-bold px-2 py-0.5 rounded text-white border border-zinc-700 uppercase">${item.Idioma}</div>
+                                    <div class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-xs text-[9px] font-bold px-2 py-0.5 rounded text-white border border-zinc-700 uppercase">${item.Idioma || ''}</div>
                                 </div>
                                 <h3 class="font-bold text-sm text-zinc-100 truncate group-hover:text-[#e50914] transition-colors">${item.Nome}</h3>
-                                <p class="text-xs text-zinc-500">${item.Categoria}</p>
+                                <p class="text-xs text-zinc-500">${item.Categoria || ''}</p>
                             </div>
                         `;
 
