@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>PHFLIX - Filmes e Séries</title>
+    <title>PHFLIX - Catálogo Premium</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -15,10 +16,19 @@
             "colors": {
               "background": "#131313",
               "surface-container": "#201f1f",
+              "surface-container-high": "#2a2a2a",
               "primary-container": "#e50914",
-              "on-background": "#e5e2e1",
+              "primary": "#ffb4aa",
               "secondary": "#c8c6c5",
-              "primary": "#ffb4aa"
+              "on-background": "#e5e2e1",
+              "on-surface": "#e5e2e1",
+              "outline-variant": "#5e3f3b"
+            },
+            "spacing": {
+              "margin-desktop": "60px",
+              "base": "8px",
+              "section-gap": "48px",
+              "gutter": "16px"
             }
           }
         }
@@ -27,49 +37,87 @@
 </head>
 <body class="bg-[#131313] text-[#e5e2e1] font-['Inter'] overflow-x-hidden">
 
-    <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/90 to-transparent px-12 py-5 flex justify-between items-center backdrop-blur-xs">
-        <span class="text-3xl font-black text-[#e50914] tracking-tighter">PHFLIX</span>
-        <button onclick="logout()" class="text-xs bg-[#353534] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-bold tracking-wide">Sair</button>
-    </nav>
+    <header class="fixed top-0 sticky z-50 bg-background/80 backdrop-blur-md flex justify-between items-center w-full px-margin-desktop py-4 transition-colors duration-300">
+        <div class="flex items-center gap-12">
+            <h1 class="text-2xl font-black tracking-tighter text-[#e50914]">PHFLIX</h1>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a class="text-white font-bold border-b-2 border-[#e50914] pb-1 text-sm transition-transform" href="#">Home</a>
+                <a class="text-secondary hover:text-white text-sm transition-colors" href="#secao-filmes">Movies</a>
+                <a class="text-secondary hover:text-white text-sm transition-colors" href="#secao-series">Series</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="user-display" class="text-xs text-secondary font-medium hidden md:inline"></span>
+            <button onclick="logout()" class="text-xs bg-surface-container-high px-4 py-2 rounded-lg border border-outline-variant hover:border-primary-container transition-colors font-bold">Sair</button>
+        </div>
+    </header>
 
-    <header id="hero-bg" class="relative h-[80vh] w-full bg-cover bg-center flex items-center px-12 transition-all duration-500" style="background-image: linear-gradient(to top, #131313 12%, transparent 88%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
-        <div class="max-w-2xl space-y-4 relative z-10 pt-24">
-            <h1 id="hero-titulo" class="text-5xl font-black md:text-6xl text-white drop-shadow-xl tracking-tight">Carregando Destaque...</h1>
-            <p id="hero-descricao" class="text-sm md:text-base text-gray-300 line-clamp-3 drop-shadow-md leading-relaxed">Conectando aos servidores seguros do banco de dados do site...</p>
-            <div class="pt-2">
-                <a id="hero-link" href="#" class="bg-[#e50914] text-white px-8 py-3 rounded-lg font-bold text-base hover:bg-red-700 transition-colors inline-block shadow-2xl">Assistir Agora</a>
+    <header id="hero-bg" class="relative h-[80vh] w-full bg-cover bg-center flex items-center px-margin-desktop transition-all duration-500" style="background-image: linear-gradient(to top, #131313 10%, transparent 90%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
+        <div class="max-w-2xl space-y-4 relative z-10 pt-16">
+            <h1 id="hero-titulo" class="text-5xl font-black md:text-6xl text-white tracking-tight drop-shadow-2xl">Carregando...</h1>
+            <p id="hero-descricao" class="text-base text-secondary line-clamp-3 leading-relaxed drop-shadow-md">Conectando ao servidor seguro dos banners cadastrados no seu Baserow...</p>
+            <div class="pt-4">
+                <a id="hero-link" href="#" class="bg-[#e50914] text-white px-8 py-3 rounded-lg font-bold text-base hover:bg-red-700 transition-colors inline-flex items-center gap-2 shadow-2xl">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span> Assistir Agora
+                </a>
             </div>
         </div>
         <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
     </header>
 
-    <main class="px-12 py-8 space-y-12 relative -mt-16 z-20">
+    <main class="min-h-screen relative -mt-12 z-20">
         
-        <section class="space-y-4">
-            <h2 class="text-2xl font-bold tracking-tight border-l-4 border-[#e50914] pl-3 text-white">Filmes</h2>
-            <div id="container-filmes" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+        <section id="secao-filmes" class="px-margin-desktop py-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Movies</h2>
+                    <p class="text-secondary text-sm max-w-2xl">Descubra a nossa biblioteca completa de filmes em alta definição de forma gratuita.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-lg border border-outline-variant text-xs font-bold hover:border-primary-container transition-colors">
+                        <span>Genres</span> <span class="material-symbols-outlined text-xs">keyboard_arrow_down</span>
+                    </button>
+                    <button class="flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-lg border border-outline-variant text-xs font-bold hover:border-primary-container transition-colors">
+                        <span>Language</span> <span class="material-symbols-outlined text-xs">keyboard_arrow_down</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="container-filmes" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-gutter">
                 </div>
         </section>
 
-        <section class="space-y-4 pt-4">
-            <h2 class="text-2xl font-bold tracking-tight border-l-4 border-[#e50914] pl-3 text-white">Séries</h2>
-            <div id="container-series" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+        <section id="secao-series" class="px-margin-desktop py-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Series</h2>
+                    <p class="text-secondary text-sm max-w-2xl">Acompanhe as suas séries favoritas com todos os episódios integrados localmente.</p>
+                </div>
+            </div>
+
+            <div id="container-series" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-gutter">
                 </div>
         </section>
     </main>
 
-    <footer class="border-t border-zinc-800 py-12 bg-background text-center text-xs text-gray-500">
-        <div class="text-2xl font-black text-[#e50914] mb-2 tracking-tighter">PHFLIX</div>
+    <footer class="border-t border-surface-variant py-12 bg-background text-center text-sm text-gray-500">
+        <span class="text-2xl font-black text-[#e50914] tracking-tighter block mb-2">PHFLIX</span>
         <p>© 2026 PHFLIX Entertainment.</p>
     </footer>
 
     <script>
         if (localStorage.getItem('phflix_autenticado') !== 'true') {
             window.location.href = '../login/index.html';
+        } else {
+            document.getElementById('user-display').innerText = `Olá, ${localStorage.getItem('phflix_usuario') || 'Usuário'}`;
         }
 
         const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
         const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
+
+        // URL Absoluta Automática para o GitHub Pages ler os CSVs
+        const NOME_USUARIO_GIT = window.location.hostname.split('.')[0];
+        const URL_CSV_CONTEUDOS = `https://${NOME_USUARIO_GIT}.github.io/phflix/dados/conteudos.csv`;
 
         document.addEventListener("DOMContentLoaded", () => {
             carregarBannerDestaque();
@@ -86,7 +134,7 @@
                     const banner = data.results[0];
                     document.getElementById('hero-titulo').innerText = banner.titulo;
                     document.getElementById('hero-descricao').innerText = banner['descrição'];
-                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 12%, transparent 88%), url('${banner.Imagem}')`;
+                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #131313 10%, transparent 90%), url('${banner.Imagem}')`;
                     document.getElementById('hero-link').href = banner.Link;
                 }
             } catch (err) {
@@ -94,11 +142,11 @@
             }
         }
 
-        // Lê o arquivo conteudos.csv mapeando exatamente pelas colunas lidas de dentro dele
         function carregarGridDeFilmesESeries() {
-            Papa.parse("../dados/conteudos.csv", {
+            Papa.parse(URL_CSV_CONTEUDOS, {
                 download: true,
                 header: true,
+                skipEmptyLines: true,
                 complete: function(results) {
                     const lista = results.data;
                     const containerFilmes = document.getElementById("container-filmes");
@@ -110,15 +158,22 @@
                     lista.forEach(item => {
                         if (!item.Nome || !item.Capa || !item.Tipo) return;
                         
+                        // HTML com a mesma árvore de tags e classes de efeito hover do seu template original
                         const card = `
                             <div class="group cursor-pointer relative" onclick="abrirMidia('${encodeURIComponent(item.Nome)}', '${item.Tipo.toLowerCase()}')">
-                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface-container mb-3 relative border border-zinc-800 shadow-md">
-                                    <img src="${item.Capa}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${item.Nome}" loading="lazy">
-                                    <div class="absolute top-2 right-2 bg-gradient-to-r from-red-700 to-red-600 text-[9px] font-extrabold px-2 py-0.5 rounded-sm uppercase tracking-wider text-white shadow-sm">${item.Idioma || 'DUB'}</div>
+                                <div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface-container mb-3 cinematic-shadow relative border border-zinc-800">
+                                    <img src="${item.Capa}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${item.Nome}" loading="lazy">
+                                    <div class="absolute top-2 right-2 bg-primary-container text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">${item.Idioma || 'DUB'}</div>
                                 </div>
-                                <div class="space-y-0.5">
-                                    <h3 class="font-semibold text-sm text-zinc-200 truncate group-hover:text-[#e50914] transition-colors">${item.Nome}</h3>
-                                    <span class="text-xs text-zinc-500 block">${item.Categoria || ''}</span>
+                                <div class="space-y-1">
+                                    <h3 class="font-semibold text-sm text-on-surface truncate group-hover:text-primary-container transition-colors">${item.Nome}</h3>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs text-secondary">${item.Categoria || ''}</span>
+                                        <div class="flex items-center gap-0.5 text-amber-500">
+                                            <span class="material-symbols-outlined !text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="text-[11px] font-bold text-secondary">4.8</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         `;
