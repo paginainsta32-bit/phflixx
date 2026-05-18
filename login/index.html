@@ -13,7 +13,7 @@
           }
     </script>
 </head>
-<body class="bg-background text-[#e5e2e1] font-['Inter'] min-h-screen flex flex-col justify-between relative">
+<body class="bg-[#131313] text-[#e5e2e1] font-['Inter'] min-h-screen flex flex-col justify-between relative">
     
     <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=1600')] bg-cover bg-center opacity-20 pointer-events-none z-0"></div>
 
@@ -55,7 +55,7 @@
                 });
                 const data = await response.json();
                 
-                // Mapeado com as colunas reais em português do seu print: Email e Senha
+                // Mapeia exatamente as colunas em português: Email e Senha
                 const usuario = data.results.find(u => u.Email === emailDigitado && u.Senha === senhaDigitada);
 
                 if (usuario) {
