@@ -8,38 +8,53 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
-          tailwind.config = {
-            darkMode: "class",
-            theme: { extend: { colors: { "background": "#131313", "primary": "#e50914" } } }
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "background": "#131313",
+              "surface-container": "#201f1f",
+              "primary-container": "#e50914",
+              "on-background": "#e5e2e1"
+            }
           }
+        }
+      }
     </script>
 </head>
 <body class="bg-[#131313] text-[#e5e2e1] font-['Inter']">
 
-    <nav class="p-5 bg-black/40 backdrop-blur-xs flex items-center justify-between border-b border-zinc-900">
-        <a href="../catalogo/index.html" class="text-sm font-semibold text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
+    <nav class="p-5 bg-black/50 backdrop-blur-xs flex items-center justify-between border-b border-zinc-900">
+        <a href="../catalogo/index.html" class="text-xs font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
             ‹ Voltar ao Catálogo
         </a>
-        <span class="text-2xl font-black text-[#e50914] tracking-wider">PHFLIX</span>
+        <span class="text-2xl font-black text-[#e50914] tracking-tight">PHFLIX</span>
     </nav>
 
-    <main class="max-w-5xl mx-auto p-6 space-y-6">
-        <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
-            <iframe id="player-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-        </div>
-
-        <div class="space-y-3 bg-neutral-900/40 p-6 rounded-xl border border-zinc-900">
-            <div class="flex items-center gap-3">
-                <h1 id="titulo-midia" class="text-3xl font-black text-white">Carregando...</h1>
-                <span id="badge-tipo" class="text-[10px] bg-zinc-800 text-zinc-300 font-extrabold px-2.5 py-0.5 rounded border border-zinc-700 uppercase">---</span>
+    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-4">
+            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
+                <iframe id="player-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
-            <p id="sinopse-midia" class="text-zinc-400 text-sm leading-relaxed">Carregando detalhes e sinopse...</p>
+            <div class="p-6 bg-zinc-900/40 rounded-xl border border-zinc-900 space-y-2">
+                <div class="flex items-center gap-3">
+                    <h1 id="titulo-midia" class="text-2xl font-black text-white">Carregando...</h1>
+                    <span id="badge-tipo" class="text-[10px] bg-red-600 font-extrabold px-2 py-0.5 rounded text-white uppercase">---</span>
+                </div>
+                <p id="sinopse-midia" class="text-zinc-400 text-sm leading-relaxed">Carregando detalhes informados do catálogo...</p>
+            </div>
         </div>
 
-        <section id="bloco-episodios" class="space-y-4 pt-4" style="display: none;">
-            <h2 class="text-xl font-bold border-l-4 border-[#e50914] pl-3">Lista de Episódios</h2>
-            <div id="grade-episodios" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
-        </section>
+        <div id="bloco-episodios" class="space-y-4" style="display: none;">
+            <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+                <h2 class="text-lg font-bold text-white">Episódios</h2>
+                <span id="contador-ep" class="text-xs text-zinc-500 font-semibold">0 episódios</span>
+            </div>
+            <div id="grade-episodios" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                </div>
+        </div>
     </main>
 
     <script>
@@ -91,28 +106,26 @@
                 }
             });
 
-            // Filtra os episódios batendo a coluna Nome do CSV de Episódios com o Nome da Série
+            // Faz o cruzamento inteligente com o arquivo episodios.csv pelo campo Nome
             Papa.parse("../dados/episodios.csv", {
                 download: true,
                 header: true,
                 complete: function(results) {
-                    const todosEpisodios = results.data;
-                    const listaFiltrada = todosEpisodios.filter(ep => ep.Nome === nome);
-                    
+                    const listaFiltrada = results.data.filter(ep => ep.Nome === nome);
                     const container = document.getElementById("grade-episodios");
+                    
+                    document.getElementById("contador-ep").innerText = `${listaFiltrada.length} Episódios`;
                     container.innerHTML = "";
 
                     listaFiltrada.forEach(ep => {
                         if(!ep.Episódio) return;
-                        
                         const itemCard = `
-                            <div class="flex flex-col p-3 bg-neutral-950/60 hover:bg-neutral-900 border border-zinc-900 rounded-lg cursor-pointer transition-all group" onclick="tocarVideo('${ep.Link}')">
-                                <div class="w-full aspect-video rounded bg-zinc-900 overflow-hidden mb-2 relative flex items-center justify-center border border-zinc-800">
-                                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                                        <span class="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded">PLAY EPISÓDIO ${ep.Episódio}</span>
-                                    </div>
+                            <div class="p-3 bg-neutral-900 hover:bg-neutral-800 border border-zinc-800 rounded-xl cursor-pointer transition-colors flex items-center justify-between group" onclick="tocarVideo('${ep.Link}')">
+                                <div>
+                                    <h4 class="font-bold text-xs text-zinc-200 group-hover:text-[#e50914] transition-colors">Temporada ${ep.Temporada} • Ep ${ep.Episódio}</h4>
+                                    <span class="text-[10px] text-zinc-500 block mt-0.5">Disponível em HD</span>
                                 </div>
-                                <h4 class="font-bold text-xs text-zinc-200 truncate">Temporada ${ep.Temporada} - Episódio ${ep.Episódio}</h4>
+                                <span class="text-xs bg-zinc-800 text-zinc-400 font-bold px-2.5 py-1 rounded group-hover:bg-[#e50914] group-hover:text-white transition-all">PLAY</span>
                             </div>
                         `;
                         container.innerHTML += itemCard;
