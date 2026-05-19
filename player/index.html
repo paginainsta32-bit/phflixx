@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -23,13 +23,17 @@ body{
     color:white;
 }
 
+video::-webkit-media-controls{
+    filter:invert(0);
+}
+
 </style>
 
 </head>
 
 <body>
 
-<header class="fixed top-0 left-0 w-full bg-black/80 backdrop-blur-md z-50">
+<header class="fixed top-0 left-0 w-full bg-black/80 backdrop-blur-md z-50 border-b border-zinc-900">
 
 <div class="flex items-center justify-between px-8 py-4">
 
@@ -48,19 +52,22 @@ PHFLIX
 
 </header>
 
-<main class="pt-24 px-8 pb-10">
+<main class="pt-24 px-6 pb-10">
 
 <div class="max-w-7xl mx-auto">
 
 <div class="aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
 
-<iframe
+<video
 id="player"
 class="w-full h-full"
-allowfullscreen
-frameborder="0"
-allow="autoplay; encrypted-media">
-</iframe>
+controls
+autoplay
+playsinline>
+
+<source id="source" src="" type="video/mp4">
+
+</video>
 
 </div>
 
@@ -76,8 +83,12 @@ new URLSearchParams(window.location.search);
 const link =
 decodeURIComponent(params.get("link") || "");
 
-document.getElementById("player").src =
+console.log(link);
+
+document.getElementById("source").src =
 link;
+
+document.getElementById("player").load();
 
 </script>
 
