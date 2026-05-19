@@ -21,10 +21,7 @@ body{
     font-family:Inter;
     background:#131313;
     color:white;
-}
-
-video::-webkit-media-controls{
-    filter:invert(0);
+    overflow:hidden;
 }
 
 </style>
@@ -33,18 +30,18 @@ video::-webkit-media-controls{
 
 <body>
 
-<header class="fixed top-0 left-0 w-full bg-black/80 backdrop-blur-md z-50 border-b border-zinc-900">
+<header class="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-zinc-900">
 
 <div class="flex items-center justify-between px-8 py-4">
 
 <a href="/phflixx/catalogo/index.html"
-class="text-zinc-300 hover:text-white">
+class="text-zinc-300 hover:text-white font-medium">
 
 ← Voltar
 
 </a>
 
-<h1 class="text-3xl font-black text-red-600">
+<h1 class="text-3xl font-black text-red-600 tracking-tight">
 PHFLIX
 </h1>
 
@@ -52,26 +49,18 @@ PHFLIX
 
 </header>
 
-<main class="pt-24 px-6 pb-10">
+<main class="pt-24 px-6 pb-6 h-screen">
 
-<div class="max-w-7xl mx-auto">
+<div class="w-full h-full max-w-7xl mx-auto">
 
-<div class="aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
-
-<video
-id="player"
-class="w-full h-full"
-controls
-autoplay
-playsinline>
-
-<source id="source" src="" type="video/mp4">
+<div class="w-full h-full bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
 
 <iframe
 id="player"
 class="w-full h-full"
 allowfullscreen
-allow="autoplay">
+allow="autoplay; encrypted-media"
+frameborder="0">
 </iframe>
 
 </div>
@@ -88,14 +77,13 @@ new URLSearchParams(window.location.search);
 const link =
 decodeURIComponent(params.get("link") || "");
 
-console.log(link);
+console.log("LINK:", link);
 
-document.getElementById("source").src =
-link;
-
-document.getElementById("player").load();
+document.getElementById("player").src =
+`/phflixx/embed.html?url=${encodeURIComponent(link)}`;
 
 </script>
 
 </body>
+
 </html>
