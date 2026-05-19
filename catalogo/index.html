@@ -211,70 +211,112 @@ async function carregarBanner(){
 
 function carregarCatalogo(){
 
-    Papa.parse(URL_GLOBAL_CONTEUDOS,{
+    fetch(URL_GLOBAL_CONTEUDOS)
 
-        download:true,
-        header:true,
-        delimiter:",",
-        skipEmptyLines:true,
+    .then(response => response.text())
 
-        complete:function(results){
+    .then(csv => {
 
-            const lista = results.data;
+        console.log("CSV BRUTO:");
+        console.log(csv);
 
-            const filmes =
-            document.getElementById("container-filmes");
+        Papa.parse(csv, {
 
-            const series =
-            document.getElementById("container-series");
+            header: true,
+            delimiter: ",",
+            skipEmptyLines: true,
 
-            filmes.innerHTML = "";
-            series.innerHTML = "";
+            complete: function(results){
 
-            lista.forEach(item=>{
+                console.log("CSV JSON:");
+                console.log(results.data);
 
-                if(!item.Nome) return;
+                const lista = results.data;
 
-                const tipo =
-                (item.Tipo || "").trim().toLowerCase();
+                const filmes =
+                document.getElementById("container-filmes");
 
-                const card = `
-                <div class="w-[190px] flex-none cursor-pointer group"
-                onclick="abrirMidia('${encodeURIComponent(item.Nome)}','${tipo}')">
+                const series =
+                document.getElementById("container-series");
 
-                    <div class="aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900">
+                filmes.innerHTML = "";
+                series.innerHTML = "";
 
-                        <img src="${item.Capa}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                lista.forEach(item => {
+
+                    if(!item.Nome) return;
+
+                    const tipo =
+                    String(item.Tipo || "")
+                    .trim()
+                    .toLowerCase();
+
+                    console.log("TIPO:", tipo);
+
+                    const card = `
+                    <div
+                    class="w-[190px] flex-none cursor-pointer group"
+                    onclick="abrirMidia('${encodeURIComponent(item.Nome)}','${tipo}')">
+
+                        <div class="aspect-[2/3] overflow-hidden rounded-xl bg-zinc-900">
+
+                            <img
+                            src="${item.Capa}"
+                            class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+
+                        </div>
+
+                        <h3 class="mt-3 font-bold text-sm truncate">
+                            ${item.Nome}
+                        </h3>
+
+                        <span class="text-xs text-zinc-400">
+                            ${item.Categoria || ""}
+                        </span>
 
                     </div>
+                    `;
 
-                    <h3 class="mt-3 font-bold text-sm truncate">
-                        ${item.Nome}
-                    </h3>
+                    if(tipo.includes("filme")){
 
-                    <span class="text-xs text-zinc-400">
-                        ${item.Categoria || ""}
-                    </span>
+                        filmes.innerHTML += card;
 
-                </div>
-                `;
+                    }
 
-                if(tipo === "filme"){
-                    filmes.innerHTML += card;
-                }
+                    else if(
+                        tipo.includes("serie") ||
+                        tipo.includes("série")
+                    ){
 
-                if(tipo === "série" || tipo === "serie"){
-                    series.innerHTML += card;
-                }
+                        series.innerHTML += card;
 
-            });
+                    }
 
-        },
+                });
 
-        error:function(err){
-            console.log(err);
-        }
+                console.log("FILMES HTML:");
+                console.log(filmes.innerHTML);
+
+                console.log("SERIES HTML:");
+                console.log(series.innerHTML);
+
+            },
+
+            error: function(err){
+
+                console.log("ERRO PAPA:");
+                console.log(err);
+
+            }
+
+        });
+
+    })
+
+    .catch(err => {
+
+        console.log("ERRO FETCH:");
+        console.log(err);
 
     });
 
