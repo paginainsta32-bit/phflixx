@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -134,7 +134,7 @@ const nome =
 decodeURIComponent(params.get("nome"));
 
 const tipo =
-params.get("tipo");
+(params.get("tipo") || "").toLowerCase();
 
 let linkFilme = "";
 
@@ -157,12 +157,15 @@ function carregarDetalhes(){
         Papa.parse(csv,{
 
             header:true,
-            delimiter:",",
+
+            skipEmptyLines:true,
 
             complete:function(results){
 
                 const item =
-                results.data.find(i=>i.Nome === nome);
+                results.data.find(i=>
+                    (i.Nome || "").trim() === nome.trim()
+                );
 
                 if(!item) return;
 
@@ -183,13 +186,16 @@ function carregarDetalhes(){
                     .onclick = ()=>{
 
                         window.location.href =
-                        `/phflixx/player/index.html?link=${encodeURIComponent(linkFilme)}`;
+                        `/phflixx/player/index.html?url=${encodeURIComponent(linkFilme)}`;
 
                     };
 
                 }
 
                 else{
+
+                    document.getElementById("botao-assistir")
+                    .style.display = "none";
 
                     carregarTemporadas();
 
@@ -217,25 +223,30 @@ function carregarTemporadas(){
         Papa.parse(csv,{
 
             header:true,
-            delimiter:",",
+
+            skipEmptyLines:true,
 
             complete:function(results){
 
                 const lista =
-                results.data.filter(ep=>ep.Nome === nome);
+                results.data.filter(ep=>
+                    (ep.Nome || "").trim().toLowerCase() ===
+                    nome.trim().toLowerCase()
+                );
 
-                const temporadas =
-                {};
+                const temporadas = {};
 
                 lista.forEach(ep=>{
 
-                    if(!temporadas[ep.Temporada]){
+                    const temp = ep.Temporada;
 
-                        temporadas[ep.Temporada] = [];
+                    if(!temporadas[temp]){
+
+                        temporadas[temp] = [];
 
                     }
 
-                    temporadas[ep.Temporada].push(ep);
+                    temporadas[temp].push(ep);
 
                 });
 
@@ -261,7 +272,7 @@ function carregarTemporadas(){
                         html += `
                         <div
                         onclick="assistirEpisodio('${ep.Link}')"
-                        class="bg-zinc-900 hover:bg-zinc-800 p-4 rounded-xl cursor-pointer">
+                        class="bg-zinc-900 hover:bg-zinc-800 p-4 rounded-xl cursor-pointer transition-all">
 
                             <h4 class="font-bold">
                             Episódio ${ep.Episódio}
@@ -272,7 +283,10 @@ function carregarTemporadas(){
 
                     });
 
-                    html += `</div></div>`;
+                    html += `
+                    </div>
+                    </div>
+                    `;
 
                     container.innerHTML += html;
 
@@ -288,8 +302,10 @@ function carregarTemporadas(){
 
 function assistirEpisodio(link){
 
-   window.location.href =
-`../player/index.html?url=${encodeURIComponent(link)}`;
+    window.location.href =
+    `/phflixx/player/index.html?url=${encodeURIComponent(link)}`;
+
+}
 
 function carregarSimilares(){
 
@@ -302,12 +318,15 @@ function carregarSimilares(){
         Papa.parse(csv,{
 
             header:true,
-            delimiter:",",
+
+            skipEmptyLines:true,
 
             complete:function(results){
 
                 const lista =
-                results.data.slice(0,20);
+                results.data
+                .filter(i=>i.Capa)
+                .slice(0,20);
 
                 const container =
                 document.getElementById("similares");
@@ -316,18 +335,16 @@ function carregarSimilares(){
 
                 lista.forEach(item=>{
 
-                    if(!item.Capa) return;
-
                     container.innerHTML += `
                     <div
                     onclick="abrirSimilar('${item.Nome}','${item.Tipo}')"
                     class="w-[180px] flex-none cursor-pointer">
 
-                        <div class="aspect-[2/3] rounded-xl overflow-hidden">
+                        <div class="aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900">
 
                             <img
                             src="${item.Capa}"
-                            class="w-full h-full object-cover">
+                            class="w-full h-full object-cover hover:scale-105 transition-all duration-300">
 
                         </div>
 
