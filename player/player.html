@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
@@ -11,182 +12,72 @@ content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap"
+rel="stylesheet">
+
+<style>
+
+body{
+    font-family:Inter;
+    background:#131313;
+    color:white;
+}
+
+</style>
 
 </head>
 
-<body class="bg-[#131313] text-white">
+<body>
 
-<nav class="bg-black p-4 flex justify-between items-center">
+<header class="fixed top-0 left-0 w-full bg-black/80 backdrop-blur-md z-50">
 
-<a href="../catalogo/index.html"
+<div class="flex items-center justify-between px-8 py-4">
+
+<a href="/phflixx/catalogo/index.html"
 class="text-zinc-300 hover:text-white">
+
 ← Voltar
+
 </a>
 
-<h1 class="text-2xl font-black text-red-600">
+<h1 class="text-3xl font-black text-red-600">
 PHFLIX
 </h1>
 
-</nav>
+</div>
 
-<div class="max-w-7xl mx-auto p-6 grid lg:grid-cols-3 gap-8">
+</header>
 
-<div class="lg:col-span-2">
+<main class="pt-24 px-8 pb-10">
 
-<div class="aspect-video bg-black rounded-xl overflow-hidden">
+<div class="max-w-7xl mx-auto">
 
-<iframe id="player"
+<div class="aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
+
+<iframe
+id="player"
 class="w-full h-full"
 allowfullscreen
-frameborder="0"></iframe>
-
-</div>
-
-<div class="mt-5">
-
-<h1 id="titulo"
-class="text-4xl font-black mb-3">
-Carregando...
-</h1>
-
-<p id="sinopse"
-class="text-zinc-400">
-...
-</p>
+frameborder="0"
+allow="autoplay; encrypted-media">
+</iframe>
 
 </div>
 
 </div>
 
-<div id="episodios-box"
-class="hidden">
-
-<h2 class="text-2xl font-black mb-4">
-Episódios
-</h2>
-
-<div id="episodios"
-class="space-y-3">
-</div>
-
-</div>
-
-</div>
+</main>
 
 <script>
-
-const URL_CONTEUDOS =
-"https://paginainsta32-bit.github.io/phflixx/dados/conteudos.csv";
-
-const URL_EPISODIOS =
-"https://paginainsta32-bit.github.io/phflixx/dados/episodios.csv";
 
 const params =
 new URLSearchParams(window.location.search);
 
-const nome =
-decodeURIComponent(params.get("nome"));
+const link =
+decodeURIComponent(params.get("link") || "");
 
-const tipo =
-params.get("tipo");
-
-if(tipo === "filme"){
-    carregarFilme();
-}else{
-    carregarSerie();
-}
-
-function carregarFilme(){
-
-    Papa.parse(URL_CONTEUDOS,{
-
-        download:true,
-        header:true,
-        delimiter:",",
-
-        complete:function(results){
-
-            const filme =
-            results.data.find(f=>f.Nome === nome);
-
-            if(!filme) return;
-
-            document.getElementById("titulo").innerText =
-            filme.Nome;
-
-            document.getElementById("sinopse").innerText =
-            filme.Sinopse || "";
-
-            document.getElementById("player").src =
-            filme.Link;
-
-        }
-
-    });
-
-}
-
-function carregarSerie(){
-
-    document.getElementById("episodios-box")
-    .classList.remove("hidden");
-
-    Papa.parse(URL_EPISODIOS,{
-
-        download:true,
-        header:true,
-        delimiter:",",
-
-        complete:function(results){
-
-            const lista =
-            results.data.filter(ep=>ep.Nome === nome);
-
-            const container =
-            document.getElementById("episodios");
-
-            container.innerHTML = "";
-
-            lista.forEach(ep=>{
-
-                const item = `
-                <div onclick="trocarPlayer('${ep.Link}')"
-                class="bg-zinc-900 hover:bg-zinc-800 p-4 rounded-xl cursor-pointer">
-
-                    <h3 class="font-bold">
-                    Temporada ${ep.Temporada}
-                    Episódio ${ep.Episódio}
-                    </h3>
-
-                </div>
-                `;
-
-                container.innerHTML += item;
-
-            });
-
-            if(lista.length > 0){
-
-                trocarPlayer(lista[0].Link);
-
-                document.getElementById("titulo").innerText =
-                nome;
-
-            }
-
-        }
-
-    });
-
-}
-
-function trocarPlayer(link){
-
-    document.getElementById("player").src =
-    link;
-
-}
+document.getElementById("player").src =
+link;
 
 </script>
 
