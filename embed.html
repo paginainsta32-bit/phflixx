@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+<body style="margin:0;background:black;">
+
+<video
+controls
+autoplay
+playsinline
+style="width:100vw;height:100vh;"
+id="v">
+
+</video>
+
+<script>
+
+const url =
+new URLSearchParams(location.search)
+.get("url");
+
+document.getElementById("v").src =
+decodeURIComponent(url);
+
+</script>
+
+</body>
+</html>
