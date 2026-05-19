@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>PHFLIX - Detalhes</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap"
+rel="stylesheet">
+
+<style>
+
+body{
+    font-family:Inter;
+    background:#131313;
+    color:white;
+}
+
+.scrollbar-none::-webkit-scrollbar{
+    display:none;
+}
+
+.scrollbar-none{
+    scrollbar-width:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md">
+
+<div class="flex items-center justify-between px-10 py-4">
+
+<a href="/phflixx/catalogo/index.html"
+class="text-zinc-300 hover:text-white">
+
+← Voltar
+
+</a>
+
+<h1 class="text-3xl font-black text-red-600">
+PHFLIX
+</h1>
+
+</div>
+
+</header>
+
+<section id="banner"
+class="h-[85vh] bg-cover bg-center flex items-end px-10 pb-20"
+style="background-image:
+linear-gradient(to top,#131313 10%,transparent 90%),
+url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1600');">
+
+<div class="max-w-3xl">
+
+<h1 id="titulo"
+class="text-6xl font-black mb-5">
+Carregando...
+</h1>
+
+<p id="sinopse"
+class="text-zinc-300 text-lg leading-relaxed mb-8">
+...
+</p>
+
+<div class="flex gap-4">
+
+<button id="botao-assistir"
+class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-xl font-bold text-lg">
+
+▶ Assistir
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<main class="px-10 py-10 space-y-14">
+
+<section id="temporadas-box" class="hidden">
+
+<h2 class="text-3xl font-black mb-6">
+Temporadas e Episódios
+</h2>
+
+<div id="temporadas"
+class="space-y-8">
+</div>
+
+</section>
+
+<section>
+
+<h2 class="text-3xl font-black mb-6">
+Conteúdos Semelhantes
+</h2>
+
+<div id="similares"
+class="flex gap-6 overflow-x-auto scrollbar-none pb-4">
+</div>
+
+</section>
+
+</main>
+
+<script>
+
+const URL_CONTEUDOS =
+"https://paginainsta32-bit.github.io/phflixx/dados/conteudos.csv";
+
+const URL_EPISODIOS =
+"https://paginainsta32-bit.github.io/phflixx/dados/episodios.csv";
+
+const params =
+new URLSearchParams(window.location.search);
+
+const nome =
+decodeURIComponent(params.get("nome"));
+
+const tipo =
+params.get("tipo");
+
+let linkFilme = "";
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+    carregarDetalhes();
+
+    carregarSimilares();
+
+});
+
+function carregarDetalhes(){
+
+    fetch(URL_CONTEUDOS)
+
+    .then(r=>r.text())
+
+    .then(csv=>{
+
+        Papa.parse(csv,{
+
+            header:true,
+            delimiter:",",
+
+            complete:function(results){
+
+                const item =
+                results.data.find(i=>i.Nome === nome);
+
+                if(!item) return;
+
+                document.getElementById("titulo").innerText =
+                item.Nome;
+
+                document.getElementById("sinopse").innerText =
+                item.Sinopse || "Sem sinopse disponível.";
+
+                document.getElementById("banner").style.backgroundImage =
+                `linear-gradient(to top,#131313 10%,transparent 90%),url('${item.Capa}')`;
+
+                if(tipo === "filme"){
+
+                    linkFilme = item.Link;
+
+                    document.getElementById("botao-assistir")
+                    .onclick = ()=>{
+
+                        window.location.href =
+                        `/phflixx/player/index.html?link=${encodeURIComponent(linkFilme)}`;
+
+                    };
+
+                }
+
+                else{
+
+                    carregarTemporadas();
+
+                }
+
+            }
+
+        });
+
+    });
+
+}
+
+function carregarTemporadas(){
+
+    document.getElementById("temporadas-box")
+    .classList.remove("hidden");
+
+    fetch(URL_EPISODIOS)
+
+    .then(r=>r.text())
+
+    .then(csv=>{
+
+        Papa.parse(csv,{
+
+            header:true,
+            delimiter:",",
+
+            complete:function(results){
+
+                const lista =
+                results.data.filter(ep=>ep.Nome === nome);
+
+                const temporadas =
+                {};
+
+                lista.forEach(ep=>{
+
+                    if(!temporadas[ep.Temporada]){
+
+                        temporadas[ep.Temporada] = [];
+
+                    }
+
+                    temporadas[ep.Temporada].push(ep);
+
+                });
+
+                const container =
+                document.getElementById("temporadas");
+
+                container.innerHTML = "";
+
+                Object.keys(temporadas).forEach(temp=>{
+
+                    let html = `
+                    <div>
+
+                    <h3 class="text-2xl font-bold mb-4">
+                    Temporada ${temp}
+                    </h3>
+
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    `;
+
+                    temporadas[temp].forEach(ep=>{
+
+                        html += `
+                        <div
+                        onclick="assistirEpisodio('${ep.Link}')"
+                        class="bg-zinc-900 hover:bg-zinc-800 p-4 rounded-xl cursor-pointer">
+
+                            <h4 class="font-bold">
+                            Episódio ${ep.Episódio}
+                            </h4>
+
+                        </div>
+                        `;
+
+                    });
+
+                    html += `</div></div>`;
+
+                    container.innerHTML += html;
+
+                });
+
+            }
+
+        });
+
+    });
+
+}
+
+function assistirEpisodio(link){
+
+    window.location.href =
+    `/phflixx/player/index.html?link=${encodeURIComponent(link)}`;
+
+}
+
+function carregarSimilares(){
+
+    fetch(URL_CONTEUDOS)
+
+    .then(r=>r.text())
+
+    .then(csv=>{
+
+        Papa.parse(csv,{
+
+            header:true,
+            delimiter:",",
+
+            complete:function(results){
+
+                const lista =
+                results.data.slice(0,20);
+
+                const container =
+                document.getElementById("similares");
+
+                container.innerHTML = "";
+
+                lista.forEach(item=>{
+
+                    if(!item.Capa) return;
+
+                    container.innerHTML += `
+                    <div
+                    onclick="abrirSimilar('${item.Nome}','${item.Tipo}')"
+                    class="w-[180px] flex-none cursor-pointer">
+
+                        <div class="aspect-[2/3] rounded-xl overflow-hidden">
+
+                            <img
+                            src="${item.Capa}"
+                            class="w-full h-full object-cover">
+
+                        </div>
+
+                        <h3 class="mt-3 text-sm font-bold truncate">
+                            ${item.Nome}
+                        </h3>
+
+                    </div>
+                    `;
+
+                });
+
+            }
+
+        });
+
+    });
+
+}
+
+function abrirSimilar(nome,tipo){
+
+    window.location.href =
+    `/phflixx/detalhes/index.html?nome=${encodeURIComponent(nome)}&tipo=${tipo}`;
+
+}
+
+</script>
+
+</body>
+</html>
