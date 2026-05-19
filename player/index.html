@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>PHFLIX Player</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap"
+rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    padding:0;
+    background:black;
+    overflow:hidden;
+    font-family:Inter,sans-serif;
+}
+
+/* VIDEO */
+#video-frame{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:none;
+    background:black;
+    z-index:1;
+}
+
+/* OVERLAY */
+.overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:9999;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:15px 20px;
+
+    background:
+    linear-gradient(to bottom,
+    rgba(0,0,0,.85),
+    rgba(0,0,0,.2),
+    transparent);
+
+    pointer-events:none;
+}
+
+/* BOTAO VOLTAR */
+.back-btn{
+    pointer-events:auto;
+
+    background:rgba(0,0,0,.55);
+
+    border:1px solid rgba(255,255,255,.12);
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    backdrop-filter:blur(10px);
+
+    transition:.2s;
+}
+
+.back-btn:hover{
+    background:#e50914;
+}
+
+/* LOGO */
+.logo{
+    color:#e50914;
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:-1px;
+
+    text-shadow:
+    0 0 10px rgba(229,9,20,.5);
+}
+
+/* LOADING */
+.loader{
+    position:fixed;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    background:black;
+
+    z-index:999;
+}
+
+.spinner{
+    width:60px;
+    height:60px;
+
+    border:5px solid #222;
+    border-top:5px solid #e50914;
+
+    border-radius:50%;
+
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
+.loading-text{
+    margin-top:20px;
+    color:#aaa;
+    font-size:14px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- LOADING -->
+<div id="loading" class="loader">
+
+    <div class="spinner"></div>
+
+    <div class="loading-text">
+        Carregando Player...
+    </div>
+
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay">
+
+    <a href="javascript:history.back()"
+    class="back-btn">
+
+        ← Voltar
+
+    </a>
+
+    <div class="logo">
+        PHFLIX
+    </div>
+
+</div>
+
+<!-- PLAYER -->
+<iframe
+id="video-frame"
+allowfullscreen
+allow="autoplay; encrypted-media">
+</iframe>
+
+<script>
+
+const params =
+new URLSearchParams(window.location.search);
+
+const videoUrl =
+decodeURIComponent(
+params.get("url") || ""
+);
+
+const iframe =
+document.getElementById("video-frame");
+
+const loading =
+document.getElementById("loading");
+
+if(!videoUrl){
+
+    alert("Link do vídeo não encontrado.");
+
+    history.back();
+
+}
+
+/*
+========================================
+MODO QUE FUNCIONOU NO SEU PROJETO
+========================================
+*/
+
+iframe.src = videoUrl;
+
+/*
+========================================
+REMOVE LOADING
+========================================
+*/
+
+iframe.onload = () => {
+
+    setTimeout(()=>{
+
+        loading.style.display = "none";
+
+    },1500);
+
+};
+
+/*
+========================================
+FALLBACK
+========================================
+*/
+
+setTimeout(()=>{
+
+    loading.style.display = "none";
+
+},8000);
+
+</script>
+
+</body>
+</html>
