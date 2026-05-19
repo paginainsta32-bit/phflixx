@@ -23,71 +23,77 @@ box-sizing:border-box;
 
 body{
 background:black;
-overflow:hidden;
 font-family:Inter;
 width:100vw;
 height:100vh;
+overflow:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+color:white;
 }
 
-/* VIDEO */
+/* BACKGROUND */
 
-video{
-width:100vw;
-height:100vh;
-object-fit:contain;
-background:black;
-}
-
-/* OVERLAY */
-
-.overlay{
+.bg{
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:90px;
-background:linear-gradient(to bottom,
-rgba(0,0,0,.85),
-transparent);
-z-index:9999;
-pointer-events:none;
+inset:0;
+background:
+linear-gradient(to top,
+rgba(0,0,0,.95),
+rgba(0,0,0,.6)),
+url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1600');
+
+background-size:cover;
+background-position:center;
+filter:blur(10px);
+transform:scale(1.1);
+}
+
+/* CONTENT */
+
+.content{
+position:relative;
+z-index:10;
+text-align:center;
 }
 
 /* LOGO */
 
 .logo{
-position:fixed;
-top:20px;
-right:25px;
-z-index:99999;
-font-size:18px;
+font-size:70px;
 font-weight:900;
 color:#e50914;
-letter-spacing:1px;
-text-shadow:0 0 10px black;
+letter-spacing:-2px;
+margin-bottom:30px;
 }
 
-/* BACK */
+/* LOADER */
 
-.back{
-position:fixed;
-top:20px;
-left:25px;
-z-index:99999;
-background:rgba(0,0,0,.6);
-color:white;
-padding:10px 18px;
-border-radius:30px;
-font-size:14px;
-font-weight:700;
-cursor:pointer;
-backdrop-filter:blur(10px);
-border:1px solid rgba(255,255,255,.1);
-transition:.2s;
+.loader{
+width:70px;
+height:70px;
+border:5px solid rgba(255,255,255,.15);
+border-top:5px solid #e50914;
+border-radius:50%;
+margin:auto;
+animation:spin 1s linear infinite;
 }
 
-.back:hover{
-background:#e50914;
+@keyframes spin{
+
+to{
+transform:rotate(360deg);
+}
+
+}
+
+.text{
+margin-top:25px;
+font-size:18px;
+font-weight:600;
+color:#ccc;
 }
 
 </style>
@@ -96,25 +102,21 @@ background:#e50914;
 
 <body>
 
-<div class="overlay"></div>
+<div class="bg"></div>
+
+<div class="content">
 
 <div class="logo">
 PHFLIX
 </div>
 
-<div class="back"
-onclick="history.back()">
+<div class="loader"></div>
 
-← Voltar
-
+<div class="text">
+Iniciando reprodução...
 </div>
 
-<video
-id="video"
-controls
-autoplay
-playsinline>
-</video>
+</div>
 
 <script>
 
@@ -126,16 +128,11 @@ decodeURIComponent(
 params.get("url") || ""
 );
 
-const video =
-document.getElementById("video");
+setTimeout(()=>{
 
-video.src = url;
+window.location.href = url;
 
-video.play().catch(e=>{
-
-console.log(e);
-
-});
+},2500);
 
 </script>
 
