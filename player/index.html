@@ -18,10 +18,10 @@ rel="stylesheet">
 <style>
 
 body{
-    font-family:Inter;
+    margin:0;
     background:#131313;
-    color:white;
     overflow:hidden;
+    font-family:Inter;
 }
 
 </style>
@@ -30,44 +30,17 @@ body{
 
 <body>
 
-<header class="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-zinc-900">
-
-<div class="flex items-center justify-between px-8 py-4">
-
-<a href="/phflixx/catalogo/index.html"
-class="text-zinc-300 hover:text-white font-medium">
-
-← Voltar
-
-</a>
-
-<h1 class="text-3xl font-black text-red-600 tracking-tight">
-PHFLIX
-</h1>
-
-</div>
-
-</header>
-
-<main class="pt-24 px-6 pb-6 h-screen">
-
-<div class="w-full h-full max-w-7xl mx-auto">
-
-<div class="w-full h-full bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
-
 <iframe
 id="player"
-class="w-full h-full"
+style="
+width:100vw;
+height:100vh;
+border:none;
+background:black;
+"
 allowfullscreen
-allow="autoplay; encrypted-media"
-frameborder="0">
+allow="autoplay; encrypted-media">
 </iframe>
-
-</div>
-
-</div>
-
-</main>
 
 <script>
 
@@ -77,11 +50,9 @@ new URLSearchParams(window.location.search);
 const link =
 decodeURIComponent(params.get("link") || "");
 
-console.log("LINK:", link);
-
 document.getElementById("player").src =
 `/phflixx/proxyplayer.html?url=${encodeURIComponent(link)}`;
-    
+
 </script>
 
 </body>
