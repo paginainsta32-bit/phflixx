@@ -375,34 +375,30 @@ function carregarSimilares(){
 function abrirSimilar(nome,tipo){
 
     window.location.href =
-    `/phflixx/detalhes/index.html?nome=${encodeURIComponent(nome)}&tipo=${tipo}`;
+    `/phflixx/detalhes/index.html?nome=${encodeURIComponent(nome)}&tipo=${tipo.toLowerCase()}`;
 
 }
 
 function abrirPlayer(url){
 
     if(!url || url === "undefined"){
+
         alert("Link não encontrado.");
         return;
+
     }
 
     document.getElementById("overlay-player")
-    .style.display = "block";
+    .style.display = "flex";
 
     document.getElementById("loading-player")
     .style.display = "flex";
 
-    const frame =
-    document.getElementById("frame-player");
+    setTimeout(()=>{
 
-    frame.src = url;
+        window.location.href = url;
 
-    frame.onload = ()=>{
-
-        document.getElementById("loading-player")
-        .style.display = "none";
-
-    };
+    },1000);
 
 }
 
@@ -410,9 +406,6 @@ function fecharPlayer(){
 
     document.getElementById("overlay-player")
     .style.display = "none";
-
-    document.getElementById("frame-player")
-    .src = "";
 
 }
 
@@ -425,6 +418,9 @@ position:fixed;
 inset:0;
 background:black;
 z-index:999999;
+align-items:center;
+justify-content:center;
+flex-direction:column;
 ">
 
 <div
@@ -472,13 +468,9 @@ PHFLIX
 
 <div id="loading-player"
 style="
-position:absolute;
-inset:0;
 display:flex;
 align-items:center;
 justify-content:center;
-background:black;
-z-index:99999;
 flex-direction:column;
 ">
 
@@ -498,25 +490,14 @@ style="
 margin-top:20px;
 font-weight:700;
 color:white;
+font-size:18px;
 ">
 
-Carregando...
+Iniciando Player...
 
 </div>
 
 </div>
-
-<iframe
-id="frame-player"
-allowfullscreen
-allow="autoplay; fullscreen"
-style="
-width:100%;
-height:100%;
-border:none;
-background:black;
-">
-</iframe>
 
 </div>
 
