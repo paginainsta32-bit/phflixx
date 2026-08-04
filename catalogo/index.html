@@ -2,272 +2,186 @@
 <html class="dark" lang="pt-BR">
 
 <head>
-
     <meta charset="utf-8"/>
-
     <link rel="manifest" href="/phflixx/manifest.json">
     <meta name="theme-color" content="#e50914">
-
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <title>PHFLIX - Catálogo</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
-    <link rel="preconnect"
-    href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap"
-    rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-
-        body{
-            font-family:Inter;
-            background:#131313;
-            color:white;
-            overflow-x:hidden;
+        body {
+            font-family: Inter, sans-serif;
+            background: #131313;
+            color: white;
+            overflow-x: hidden;
         }
 
-        .scrollbar-none::-webkit-scrollbar{
-            display:none;
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
         }
 
-        .scrollbar-none{
-            scrollbar-width:none;
+        .scrollbar-none {
+            scrollbar-width: none;
         }
-
     </style>
-
 </head>
 
 <body>
 
 <header class="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-zinc-900">
+    <div class="flex items-center justify-between px-6 md:px-10 py-4 gap-4">
 
-    <div class="flex items-center justify-between px-10 py-4">
-
-        <div class="flex items-center gap-10">
-
+        <div class="flex items-center gap-8">
             <h1 class="text-3xl font-black text-red-600">
                 PHFLIX
             </h1>
 
             <nav class="hidden md:flex gap-6">
-
-                <a href="#"
-                class="font-bold text-white border-b-2 border-red-600 pb-1">
+                <a href="#" class="font-bold text-white border-b-2 border-red-600 pb-1">
                     Home
                 </a>
-
-                <a href="#titulo-filmes"
-                class="text-zinc-400 hover:text-white">
+                <a href="#titulo-filmes" class="text-zinc-400 hover:text-white">
                     Filmes
                 </a>
-
-                <a href="#titulo-series"
-                class="text-zinc-400 hover:text-white">
+                <a href="#titulo-series" class="text-zinc-400 hover:text-white">
                     Séries
                 </a>
-
             </nav>
+        </div>
 
+        <!-- BARRA DE PESQUISA -->
+        <div class="flex-1 max-w-xs md:max-w-md mx-2">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    oninput="filtrarCatalogo()"
+                    placeholder="Buscar filmes ou séries..." 
+                    class="w-full bg-zinc-900 text-sm text-white placeholder-zinc-500 rounded-lg px-4 py-2 border border-zinc-800 focus:outline-none focus:border-red-600 transition duration-200"
+                />
+            </div>
         </div>
 
         <div class="flex items-center gap-4">
+            <span id="user-display" class="hidden sm:inline text-sm text-zinc-400"></span>
 
-            <span id="user-display"
-            class="text-sm text-zinc-400">
-            </span>
-
-            <button onclick="logout()"
-            class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm font-bold">
-
+            <button onclick="logout()" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm font-bold">
                 Sair
-
             </button>
-
         </div>
 
     </div>
-
 </header>
 
 <section id="hero-bg"
 class="h-[80vh] bg-cover bg-center flex items-center px-10"
-style="background-image:
-linear-gradient(to top,#131313 10%,transparent 90%),
-url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
+style="background-image: linear-gradient(to top,#131313 10%,transparent 90%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600');">
 
     <div class="max-w-2xl mt-20">
-
-        <h1 id="hero-titulo"
-        class="text-6xl font-black mb-5">
+        <h1 id="hero-titulo" class="text-6xl font-black mb-5">
             PHFLIX
         </h1>
 
-        <p id="hero-descricao"
-        class="text-zinc-300 text-lg mb-8">
+        <p id="hero-descricao" class="text-zinc-300 text-lg mb-8">
             Carregando catálogo...
         </p>
 
-        <a id="hero-link"
-        href="#"
-        class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-xl inline-flex items-center gap-2 font-bold text-lg">
-
+        <a id="hero-link" href="#" class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-xl inline-flex items-center gap-2 font-bold text-lg">
             ▶ Assistir Agora
-
         </a>
-
     </div>
 
 </section>
 
 <main class="px-10 py-10 space-y-16">
 
-    <section>
-
-        <h2 id="titulo-filmes"
-        class="text-4xl font-black mb-6 border-l-4 border-red-600 pl-4">
-
+    <section id="secao-filmes">
+        <h2 id="titulo-filmes" class="text-4xl font-black mb-6 border-l-4 border-red-600 pl-4">
             Filmes Disponíveis
-
         </h2>
 
-        <div id="container-filmes"
-        class="flex gap-6 overflow-x-auto scrollbar-none pb-4">
+        <div id="container-filmes" class="flex gap-6 overflow-x-auto scrollbar-none pb-4">
         </div>
-
     </section>
 
-    <section>
-
-        <h2 id="titulo-series"
-        class="text-4xl font-black mb-6 border-l-4 border-red-600 pl-4">
-
+    <section id="secao-series">
+        <h2 id="titulo-series" class="text-4xl font-black mb-6 border-l-4 border-red-600 pl-4">
             Séries Completas
-
         </h2>
 
-        <div id="container-series"
-        class="flex gap-6 overflow-x-auto scrollbar-none pb-4">
+        <div id="container-series" class="flex gap-6 overflow-x-auto scrollbar-none pb-4">
         </div>
-
     </section>
 
 </main>
 
 <footer class="border-t border-zinc-900 py-10 text-center text-zinc-500 text-sm">
-
     <h1 class="text-3xl font-black text-red-600 mb-3">
         PHFLIX
     </h1>
-
     © 2026 PHFLIX Entertainment
-
 </footer>
 
 <script>
 
 if(localStorage.getItem("phflix_autenticado") !== "true"){
-
-    window.location.href =
-    "../login/index.html";
-
+    window.location.href = "../login/index.html";
 }
 
 document.getElementById("user-display").innerText =
 `Olá, ${localStorage.getItem("phflix_usuario") || "Usuário"}`;
 
-const TABELA_BANNERS_URL =
-"https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
+const TABELA_BANNERS_URL = "https://api.baserow.io/api/database/rows/table/982353/?user_field_names=true";
+const TOKEN = "21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
+const URL_GLOBAL_CONTEUDOS = "https://paginainsta32-bit.github.io/phflixx/dados/conteudos.csv";
 
-const TOKEN =
-"21WDS4cSz6izrJsEfUzRblsIdtj9DCF5";
-
-const URL_GLOBAL_CONTEUDOS =
-"https://paginainsta32-bit.github.io/phflixx/dados/conteudos.csv";
-
-document.addEventListener("DOMContentLoaded",()=>{
-
+document.addEventListener("DOMContentLoaded", () => {
     carregarBanner();
-
     carregarCatalogo();
-
 });
 
 async function carregarBanner(){
-
-    try{
-
-        const response = await fetch(TABELA_BANNERS_URL,{
-
-            headers:{
-                "Authorization":`Token ${TOKEN}`
+    try {
+        const response = await fetch(TABELA_BANNERS_URL, {
+            headers: {
+                "Authorization": `Token ${TOKEN}`
             }
-
         });
 
         const data = await response.json();
 
         if(data.results && data.results.length > 0){
-
             const banner = data.results[0];
-
-            document.getElementById("hero-titulo").innerText =
-            banner.titulo || "PHFLIX";
-
-            document.getElementById("hero-descricao").innerText =
-            banner["descrição"] || "";
-
-            document.getElementById("hero-link").href =
-            banner.Link || "#";
-
-            document.getElementById("hero-bg").style.backgroundImage =
-            `linear-gradient(to top,#131313 10%,transparent 90%),url('${banner.Imagem}')`;
-
+            document.getElementById("hero-titulo").innerText = banner.titulo || "PHFLIX";
+            document.getElementById("hero-descricao").innerText = banner["descrição"] || "";
+            document.getElementById("hero-link").href = banner.Link || "#";
+            document.getElementById("hero-bg").style.backgroundImage = `linear-gradient(to top,#131313 10%,transparent 90%),url('${banner.Imagem}')`;
         }
-
-    }catch(e){
-
+    } catch(e) {
         console.log(e);
-
     }
-
 }
 
 function carregarCatalogo(){
-
     fetch(URL_GLOBAL_CONTEUDOS)
-
     .then(response => response.text())
-
     .then(csv => {
-
         Papa.parse(csv, {
-
             header: true,
             delimiter: ",",
             skipEmptyLines: true,
-
             complete: function(results){
-
-                console.log(results.data);
-
                 const lista = results.data;
-
-                const filmes =
-                document.getElementById("container-filmes");
-
-                const series =
-                document.getElementById("container-series");
+                const filmes = document.getElementById("container-filmes");
+                const series = document.getElementById("container-series");
 
                 filmes.innerHTML = "";
                 series.innerHTML = "";
@@ -276,26 +190,18 @@ function carregarCatalogo(){
                 let htmlSeries = "";
 
                 lista.forEach(item => {
-
                     if(!item.Nome) return;
 
-                    const tipo =
-                    String(item.Tipo || "")
-                    .trim()
-                    .toLowerCase();
+                    const tipo = String(item.Tipo || "").trim().toLowerCase();
 
                     const card = `
-                    <div
-                    class="w-[190px] flex-none cursor-pointer group"
-                    onclick="abrirMidia('${encodeURIComponent(item.Nome)}','${tipo}')">
+                    <div class="card-item w-[190px] flex-none cursor-pointer group"
+                         data-nome="${item.Nome.toLowerCase()}"
+                         data-categoria="${(item.Categoria || '').toLowerCase()}"
+                         onclick="abrirMidia('${encodeURIComponent(item.Nome)}','${tipo}')">
 
                         <div class="aspect-[2/3] overflow-hidden rounded-xl bg-zinc-900">
-
-                            <img
-                            src="${item.Capa}"
-                            loading="lazy"
-                            class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-
+                            <img src="${item.Capa}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         </div>
 
                         <h3 class="mt-3 font-bold text-sm truncate">
@@ -305,66 +211,52 @@ function carregarCatalogo(){
                         <span class="text-xs text-zinc-400">
                             ${item.Categoria || ""}
                         </span>
-
                     </div>
                     `;
 
                     if(tipo.includes("filme")){
-
                         htmlFilmes += card;
-
-                    }
-
-                    else if(
-                        tipo.includes("serie") ||
-                        tipo.includes("série")
-                    ){
-
+                    } else if(tipo.includes("serie") || tipo.includes("série")){
                         htmlSeries += card;
-
                     }
-
                 });
 
                 filmes.innerHTML = htmlFilmes;
                 series.innerHTML = htmlSeries;
-
-                console.log("CATALOGO CARREGADO");
-
             },
-
-            error:function(err){
-
+            error: function(err){
                 console.log(err);
-
             }
-
         });
-
     })
-
-    .catch(err=>{
-
+    .catch(err => {
         console.log(err);
-
     });
-
 }
 
-function abrirMidia(nome,tipo){
+function filtrarCatalogo() {
+    const termo = document.getElementById("searchInput").value.toLowerCase().trim();
+    const cards = document.querySelectorAll(".card-item");
 
-    window.location.href =
-    `/phflixx/detalhes/index.html?nome=${nome}&tipo=${tipo}`;
+    cards.forEach(card => {
+        const nome = card.getAttribute("data-nome") || "";
+        const categoria = card.getAttribute("data-categoria") || "";
 
+        if (nome.includes(termo) || categoria.includes(termo)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
+function abrirMidia(nome, tipo){
+    window.location.href = `/phflixx/detalhes/index.html?nome=${nome}&tipo=${tipo}`;
 }
 
 function logout(){
-
     localStorage.clear();
-
-    window.location.href =
-    "../login/index.html";
-
+    window.location.href = "../login/index.html";
 }
 
 </script>
